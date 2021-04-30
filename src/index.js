@@ -1,6 +1,6 @@
 import Stage from "./stage";
-import Box from "./box";
-import Link from "./link";
+import Boxes from "./boxes";
+import Links from "./links";
 import Selection from "./selection";
 class Main {
     constructor(){
@@ -10,8 +10,11 @@ class Main {
         this.dom.appendChild(this.stage.dom);
 
 
-        this.boxes = [];
-        this.links = [];
+        this.links = new Links(this);
+        this.dom.appendChild(this.links.dom);
+        this.boxes = new Boxes(this);
+        this.dom.appendChild(this.boxes.dom);
+
         this.selection = new Selection(this);
 
         window.addEventListener("resize", this.onResize);
@@ -20,53 +23,16 @@ class Main {
     }
 
     initDebug(){
-        const a = this.createBox(150, 150, "hello");
-        const b = this.createBox(550, 350, "world");
-        this.addLink(a, b);
+        this.links.addLink(
+            this.boxes.createBox(150, 150, "hello"),
+            this.boxes.createBox(550, 350, "world")
+        );
+        this.links.addLink(
+            this.boxes.createBox(250, 350, "hello"),
+            this.boxes.createBox(650, 450, "world")
+        );
     }
 
-    startBoxCreation(x, y){
-        const box = this.createBox(x, y);
-        box.editionEnded.addOnce(content => {
-            if(content.trim().length === 0){
-                this.stage.removeBox(box);
-            }
-        });
-        box.enableEdition();
-        box.addToSelection();
-    }
-
-    createBox(x, y, defaultContent){
-        const box = new Box(this);
-        box.setPosition(x, y);
-        box.enable();
-        if(defaultContent){
-            box.setContent(defaultContent);
-        }
-        this.boxes.push(box);
-        this.stage.addBox(box);
-        return box;
-    }
-
-    removeBox(box){
-        box.disable();
-        this.selection.removeBox(box);
-        this.stage.removeBox(box);
-        const id = this.boxes.indexOf(box);
-        if(id !== -1){
-            this.boxes.splice(id, 1);
-        }
-    }
-
-    addLink(origin, target){
-        const link = new Link(origin, target);
-        this.links.push(link);
-        this.stage.addLink(link);
-    }
-
-    updateLinks(){
-        this.links.forEach(link => link.update());
-    }
 
     onResize = () => {
         this.stage.updateSize();

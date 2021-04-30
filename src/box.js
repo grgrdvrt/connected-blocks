@@ -1,29 +1,40 @@
 import {dom} from "./utils/dom";
-import Signal from "./utils/signal";
+
+import BoxMenu from "./boxMenu";
 
 export default class Box {
     constructor(context){
         this.context = context;
         this.isSelected = false;
         this.isDragging = false;
-        this.editionCancelled = new Signal();
-        this.editionEnded = new Signal();
         this.initDom();
     }
 
     initDom(){
-        this.dom = dom({classes:"box"});
+        this.menu = new BoxMenu(this, this.context);
         this.input = dom({
             type:"textarea",
-            parent:this.dom,
             classes:"box-input",
         });
-        this.content = dom({parent:this.dom, classes:"box-content"});
+        this.content = dom({classes:"box-content"});
+        this.dom = dom({classes:"box", children:[
+            this.menu.dom,
+            this.content,
+            this.input,
+        ]});
     }
 
     enable(){
         this.enableSelection();
+        this.menu.enable();
         this.content.addEventListener("dblclick", this.onEdit);
+    }
+
+    disable(){
+        this.disableSelection();
+        this.menu.disable();
+        this.content.removeEventListener("mousedown", this.onStartDrag);
+        this.content.removeEventListener("dblclick", this.onEdit);
     }
 
     enableSelection(){
@@ -34,8 +45,9 @@ export default class Box {
         this.content.removeEventListener("click", this.onSelect);
     }
 
-    onSelect = () => {
-        if(!this.isDragging){
+    onSelect = e => {
+        const isTarget = e.target === this.dom || e.target === this.content;
+        if(isTarget && !this.isDragging){
             this.toggleSelected();
         }
     }
@@ -115,12 +127,10 @@ export default class Box {
         this.disableEdition();
         const content = this.input.value.replace(/\n/g, "<br>");
         this.content.innerHTML = content;
-        this.editionEnded.dispatch(content);
-        this.context.updateLinks();
+        this.context.links.update();
     }
 
     cancelEdition(){
         this.disableEdition();
-        this.editionCancelled.dispatch();
     }
 }
