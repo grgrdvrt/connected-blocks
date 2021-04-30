@@ -8,15 +8,24 @@ export default class Stage{
 
     initDom(){
         this.dom = dom({classes:["stage"]});
+        this.background = dom({
+            classes:["stage-background"],
+            parent:this.dom
+        });
         this.boxesContainer = dom({parent:this.dom});
     }
 
     enable(){
-        this.dom.addEventListener("dblclick", this.onDoubleClick);
+        this.background.addEventListener("dblclick", this.onDoubleClick);
+        this.background.addEventListener("click", this.onClick);
     }
 
     onDoubleClick = e => {
         this.context.addBox(e.clientX, e.clientY);
+    }
+
+    onClick = e => {
+        this.context.selection.clear();
     }
 
     addBox(box){

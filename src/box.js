@@ -4,6 +4,7 @@ export default class Box {
     constructor(context){
         this.context = context;
         this.isSelected = false;
+        this.isDragging = false;
         this.initDom();
     }
 
@@ -16,26 +17,43 @@ export default class Box {
     }
 
     onClick = () => {
-        this.toggleSelected();
+        if(!this.isDragging){
+            this.toggleSelected();
+        }
     }
 
     toggleSelected(){
         if(this.isSelected){
-            this.deselect();
+            this.removeFromSelection();
         }
         else{
-            this.select();
+            this.addToSelection();
         }
+    }
+
+    addToSelection(){
+        this.context.selection.addBox(this);
+    }
+
+    removeFromSelection(){
+        this.context.selection.removeBox(this);
     }
 
     select(){
         this.isSelected = true;
         this.dom.classList.add("selected");
+        this.dom.addEventListener("mousedown", this.onStartDrag);
     }
 
     deselect(){
         this.isSelected = false;
         this.dom.classList.remove("selected");
+        this.dom.removeEventListener("mousedown", this.onStartDrag);
+    }
+
+    onStartDrag = e => {
+        this.isDragging = false;
+        this.context.selection.startDrag(e.pageX, e.pageY);
     }
 
     setPosition(x, y){

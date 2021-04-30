@@ -1,14 +1,18 @@
 import dom from "./utils/dom";
 import Stage from "./stage";
 import Box from "./box";
+import Selection from "./selection";
 class Main {
     constructor(){
+        this.dom = document.body;
         this.stage = new Stage(this);
         this.stage.enable();
-        document.body.appendChild(this.stage.dom);
+        this.dom.appendChild(this.stage.dom);
 
         this.boxes = [];
         this.addBox(100, 50);
+
+        this.selection = new Selection(this);
 
         window.addEventListener("resize", this.onResize);
     }
