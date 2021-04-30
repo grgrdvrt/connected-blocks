@@ -10,13 +10,37 @@ export default class link{
     }
 
     initDom(){
-        this.dom = svg("path", {
+        this.line = svg("path", {
             classes:"link",
             attributes:{
                 fill:"none",
                 stroke:"#777777",
                 "stroke-width":"2",
             }
+        });
+        this.headOrigin = svg("path", {
+            classes:"link",
+            attributes:{
+                fill:"none",
+                stroke:"#777777",
+                "stroke-width":"2",
+            }
+        });
+        this.headTarget = svg("path", {
+            classes:"link",
+            attributes:{
+                fill:"none",
+                stroke:"#777777",
+                "stroke-width":"2",
+            }
+        });
+        this.dom = svg("g", {
+            classes:"link",
+            children:[
+                this.line,
+                this.headOrigin,
+                this.headTarget,
+            ]
         });
     }
 
@@ -35,31 +59,52 @@ export default class link{
         const inter1 = boxSegmentIntersection(r1, p1, p2);
         const inter2 = boxSegmentIntersection(r2, p1, p2);
 
+
         if(inter1 && inter2){
-            const {pt:i1, norm:n1} = inter1;
-            const {pt:i2, norm:n2} = inter2;
+            const {pt:i1, norm:n1, rot:r1} = inter1;
+            const {pt:i2, norm:n2, rot:r2} = inter2;
             const c1 = {
-                x:lerp(i1.x, i2.x, n1.x * 0.3),
-                y:lerp(i1.y, i2.y, n1.y * 0.3),
+                x:lerp(i1.x, i2.x, Math.abs(n1.x) * 0.3),
+                y:lerp(i1.y, i2.y, Math.abs(n1.y) * 0.3),
             };
             const c2 = {
-                x:lerp(i2.x, i1.x, n2.x * 0.3),
-                y:lerp(i2.y, i1.y, n2.y * 0.3),
+                x:lerp(i2.x, i1.x, Math.abs(n2.x) * 0.3),
+                y:lerp(i2.y, i1.y, Math.abs(n2.y) * 0.3),
             };
 
+            const arr1 = makeInheritanceHead();
+            // const arr2 = makeUsageHead();
+            const arr2 = makeCompositionHead();
             const d = [
-                "M", i1.x, i1.y,
+                "M", i1.x + arr1.size * n1.x, i1.y + arr1.size * n1.y,
                 "C", c1.x, c1.y,
                 c2.x, c2.y,
-                i2.x, i2.y,
+                i2.x + arr2.size * n2.x, i2.y + arr2.size * n2.y,
             ].join(" ");
+            this.headOrigin.setAttributeNS(null, "d", arr1.d);
+            this.headOrigin.setAttributeNS(null, "transform", `translate(${i1.x}, ${i1.y}) rotate(${r1})`);
+            this.headTarget.setAttributeNS(null, "d", arr2.d);
+            this.headTarget.setAttributeNS(null, "transform", `translate(${i2.x}, ${i2.y}) rotate(${r2})`);
 
-            this.dom.setAttributeNS(null, "d", d);
+            this.line.setAttributeNS(null, "d", d);
         }
         else{
-            this.dom.setAttributeNS(null, "d", "");
+            this.line.setAttributeNS(null, "d", "");
         }
     }
+}
+
+function makeInheritanceHead(x, y){
+    const s = 8;
+    return {d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`, size:s};
+}
+function makeUsageHead(x, y){
+    const s = 8;
+    return {d:`M -${s} -${s} L 0 0 l -${s} ${s}`, size:0};
+}
+function makeCompositionHead(x, y){
+    const s = 8;
+    return {d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`, size:2 * s};
 }
 
 function lerpPts(p1, p2, t){
@@ -78,10 +123,10 @@ function isInBox(box, pt){
 
 function boxSegmentIntersection(box, p1, p2){
     const candidates = [
-        {pt:vBorderSegmentIntersection(box.x, p1, p2), norm:{x:1, y:0}},
-        {pt:vBorderSegmentIntersection(box.x + box.width, p1, p2), norm:{x:1, y:0}},
-        {pt:hBorderSegmentIntersection(box.y, p1, p2), norm:{x:0, y:1}},
-        {pt:hBorderSegmentIntersection(box.y + box.height, p1, p2), norm:{x:0, y:1}},
+        {pt:vBorderSegmentIntersection(box.x, p1, p2), norm:{x:-1, y:0}, rot:0},
+        {pt:vBorderSegmentIntersection(box.x + box.width, p1, p2), norm:{x:1, y:0}, rot:180},
+        {pt:hBorderSegmentIntersection(box.y, p1, p2), norm:{x:0, y:-1}, rot:90},
+        {pt:hBorderSegmentIntersection(box.y + box.height, p1, p2), norm:{x:0, y:1}, rot:-90},
     ];
     return candidates.filter(candidate => candidate.pt && isInBox(box, candidate.pt))[0];
 }
