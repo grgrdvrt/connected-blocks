@@ -1,5 +1,7 @@
 import {dom, svg} from "./utils/dom";
 import Box from "./box";
+
+let nextId = 0;
 export default class Boxes{
     constructor(context){
         this.context = context;
@@ -30,6 +32,8 @@ export default class Boxes{
 
     createBox(x, y, defaultContent){
         const box = new Box(this.context);
+        box.id = nextId;
+        nextId++;
         box.setPosition(x, y);
         if(defaultContent){
             box.setContent(defaultContent);
@@ -75,5 +79,22 @@ export default class Boxes{
 
     getBoxByDom(dom){
         return this.boxes.find(box => box.dom === dom);
+    }
+
+    getBoxById(id){
+        return this.boxes.find(box => box.id === id);
+    }
+
+    setMemento(memento){
+        memento.forEach(boxMemento => {
+            const box = this.createBox(boxMemento.x, boxMemento.y, boxMemento.content);
+            box.setMemento(boxMemento);
+            this.addBox(box);
+        });
+        nextId = this.boxes[this.boxes.length - 1].id + 1;
+    }
+
+    getMemento(){
+        return this.boxes.map(box => box.getMemento());
     }
 }

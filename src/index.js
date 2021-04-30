@@ -28,20 +28,36 @@ class Main {
     }
 
     initDebug(){
-        this.links.addLink(this.links.createLink(
-            this.boxes.addBox(this.boxes.createBox(150, 150, "hello")),
-            this.boxes.addBox(this.boxes.createBox(550, 350, "world"))
-        ));
-        this.links.addLink(this.links.createLink(
-            this.boxes.addBox(this.boxes.createBox(250, 350, "hello")),
-            this.boxes.addBox(this.boxes.createBox(650, 450, "world")),
-        ));
+        this.setMemento({
+            boxes:[
+                {id:0, x:150, y:150, content:"hello"},
+                {id:1, x:550, y:350, content:"world"},
+                {id:2, x:250, y:400, content:"hello"},
+                {id:3, x:650, y:450, content:"world"},
+            ],
+            links:[
+                {origin:0, target:1},
+                {origin:2, target:3},
+            ]
+        });
     }
 
 
     onResize = () => {
         this.stage.updateSize();
         this.links.setSize(this.stage.width, this.stage.height);
+    }
+
+    setMemento(memento){
+        this.boxes.setMemento(memento.boxes);
+        this.links.setMemento(memento.links);
+    }
+
+    getMemento(){
+        return {
+            boxes:this.boxes.getMemento(),
+            links:this.links.getMemento(),
+        };
     }
 }
 

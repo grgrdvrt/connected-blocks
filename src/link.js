@@ -92,6 +92,16 @@ export default class link{
             this.line.setAttributeNS(null, "d", "");
         }
     }
+
+    setMemento(memento){
+    }
+
+    getMemento(){
+        return {
+            origin:this.origin.id,
+            target:this.target.id,
+        };
+    }
 }
 
 function makeInheritanceHead(x, y){

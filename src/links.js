@@ -117,4 +117,18 @@ export default class Links{
         this.dom.setAttributeNS(null, "width", this.width);
         this.dom.setAttributeNS(null, "height", this.height);
     }
+
+    setMemento(memento){
+        memento.forEach(linkMemento => {
+            const link = this.createLink(
+                this.context.boxes.getBoxById(linkMemento.origin),
+                this.context.boxes.getBoxById(linkMemento.target),
+            );
+            this.addLink(link);
+        });
+    }
+
+    getMemento(){
+        return this.links.map(link => link.getMemento());
+    }
 }

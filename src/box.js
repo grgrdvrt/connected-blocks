@@ -5,6 +5,11 @@ import BoxMenu from "./boxMenu";
 export default class Box {
     constructor(context){
         this.context = context;
+        this.inputContent = "";
+        this.x = 0;
+        this.y = 0;
+        this.width = 100;
+        this.height = 100;
         this.isSelected = false;
         this.isDragging = false;
         this.initDom();
@@ -71,8 +76,9 @@ export default class Box {
     }
 
     setContent(content){
+        this.inputContent = content;
         this.input.value = content;
-        this.content.innerHTML = content.replace(/\n/g, "<br>");
+        this.displayContent();
     }
 
     select(){
@@ -139,16 +145,22 @@ export default class Box {
 
     endEdition(){
         this.disableEdition();
-        const content = this.input.value.replace(/  \n/g, "<br>");
+        this.inputContent = this.input.value;
+        this.displayContent();
+    }
+
+    cancelEdition(){
+        this.input.value = this.inputContent;
+        this.disableEdition();
+    }
+
+    displayContent(){
+        const content = this.inputContent.replace(/  \n/g, "<br>");
         if(content !== this.content.innerHTML){
             this.content.innerHTML = content;
             this.context.links.getRelatedLinks(this)
                 .forEach(link => link.update());
         }
-    }
-
-    cancelEdition(){
-        this.disableEdition();
     }
 
     getRect(){
@@ -158,6 +170,24 @@ export default class Box {
             y:bcr.y - this.context.stage.y,
             width:bcr.width,
             height:bcr.height,
+        };
+    }
+
+    setMemento(memento){
+        this.x = memento.x;
+        this.y = memento.y;
+        this.width = memento.width;
+        this.height = memento.height;
+        this.setContent(memento.content);
+    }
+
+    getMemento(){
+        return {
+            x:this.x,
+            y:this.y,
+            width:this.width,
+            height:this.height,
+            content:this.displayContent
         };
     }
 }
