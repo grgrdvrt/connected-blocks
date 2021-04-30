@@ -9,21 +9,36 @@ class Main {
         this.stage.enable();
         this.dom.appendChild(this.stage.dom);
 
-        this.boxes = [];
-        this.addBox(100, 50);
 
+        this.boxes = [];
         this.selection = new Selection(this);
 
         window.addEventListener("resize", this.onResize);
     }
 
-    addBox(x, y){
+    createBox(x, y){
         const box = new Box(this);
-        box.setSize(50, 50);
         box.setPosition(x, y);
         box.enable();
+        box.editionEnded.addOnce(content => {
+            if(content.trim().length === 0){
+                this.stage.removeBox(box);
+            }
+        });
         this.boxes.push(box);
+        box.enableEdition();
         this.stage.addBox(box);
+        box.addToSelection();
+    }
+
+    removeBox(box){
+        box.disable();
+        this.selection.removeBox(box);
+        this.stage.removeBox(box);
+        const id = this.boxes.indexOf(box);
+        if(id !== -1){
+            this.boxes.splice(id, 1);
+        }
     }
 
     onResize = () => {

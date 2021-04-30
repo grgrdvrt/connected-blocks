@@ -7,7 +7,9 @@ export default class Selection {
 
     addBox(box){
         box.select();
-        this.boxes.push(box);
+        if(!this.boxes.includes(box)){
+            this.boxes.push(box);
+        }
     }
 
     removeBox(box){

@@ -21,7 +21,7 @@ export default class Stage{
     }
 
     onDoubleClick = e => {
-        this.context.addBox(e.clientX, e.clientY);
+        this.context.createBox(e.clientX, e.clientY);
     }
 
     onClick = e => {
@@ -30,6 +30,10 @@ export default class Stage{
 
     addBox(box){
         this.boxesContainer.appendChild(box.dom);
+    }
+
+    removeBox(box){
+        this.boxesContainer.removeChild(box.dom);
     }
 
     updateSize(){

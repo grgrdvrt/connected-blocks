@@ -30,10 +30,34 @@ html, body {
     bottom:0px;
 }
 
+.box .box-menu{
+    display:none;
+    position:absolute;
+    bottom:0px;
+}
+
+.box .box-input{
+    display:none;
+}
+
+.box .box-content{
+    user-select:none;
+    margin:5px;
+}
+
+
+.box.edition .box-input{
+    display:block;
+}
+
+.box.edition .box-content{
+    display:none;
+}
+
 .box.selected{
     border:solid 2px black;
 }
 
 .box.selected .box-menu{
-    display:box;
+    display:block;
 }
