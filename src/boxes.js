@@ -13,17 +13,19 @@ export default class Boxes{
 
     startBoxCreation(x, y){
         const box = this.createBox(x, y);
+        this.context.selection.set([box]);
         box.enableEdition();
-        box.addToSelection();
 
+        const exec = () => this.addBox(box);
         this.context.undoStack.addAction({
             undo:() => {
                 this.removeBox(box);
             },
             redo:() => {
-                this.addBox(box);
+                exec();
             },
         });
+        exec();
     }
 
     createBox(x, y, defaultContent){

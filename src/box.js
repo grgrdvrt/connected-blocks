@@ -139,9 +139,12 @@ export default class Box {
 
     endEdition(){
         this.disableEdition();
-        const content = this.input.value.replace(/\n/g, "<br>");
-        this.content.innerHTML = content;
-        this.context.links.update();
+        const content = this.input.value.replace(/  \n/g, "<br>");
+        if(content !== this.content.innerHTML){
+            this.content.innerHTML = content;
+            this.context.links.getRelatedLinks(this)
+                .forEach(link => link.update());
+        }
     }
 
     cancelEdition(){

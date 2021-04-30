@@ -31,6 +31,7 @@ export default class Selection {
             box.deselect();
         });
         this.boxes.length = 0;
+        this.context.links.update();
     }
 
     startDrag(x, y){
