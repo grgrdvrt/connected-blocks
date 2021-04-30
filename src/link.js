@@ -32,26 +32,33 @@ export default class link{
             x: r2.x + 0.5 * r2.width,
             y: r2.y + 0.5 * r2.height,
         };
-        const {pt:i1, norm:n1} = boxSegmentIntersection(r1, p1, p2);
-        const {pt:i2, norm:n2} = boxSegmentIntersection(r2, p1, p2);
+         const inter1 = boxSegmentIntersection(r1, p1, p2);
+        const inter2 = boxSegmentIntersection(r2, p1, p2);
 
-        const c1 = {
-            x:lerp(i1.x, i2.x, n1.x * 0.3),
-            y:lerp(i1.y, i2.y, n1.y * 0.3),
-        };
-        const c2 = {
-            x:lerp(i2.x, i1.x, n2.x * 0.3),
-            y:lerp(i2.y, i1.y, n2.y * 0.3),
-        };
+        if(inter1 && inter2){
+            const {pt:i1, norm:n1} = inter1;
+            const {pt:i2, norm:n2} = inter2;
+            const c1 = {
+                x:lerp(i1.x, i2.x, n1.x * 0.3),
+                y:lerp(i1.y, i2.y, n1.y * 0.3),
+            };
+            const c2 = {
+                x:lerp(i2.x, i1.x, n2.x * 0.3),
+                y:lerp(i2.y, i1.y, n2.y * 0.3),
+            };
 
-        const d = [
-            "M", i1.x, i1.y,
-            "C", c1.x, c1.y,
-            c2.x, c2.y,
-            i2.x, i2.y,
-        ].join(" ");
+            const d = [
+                "M", i1.x, i1.y,
+                "C", c1.x, c1.y,
+                c2.x, c2.y,
+                i2.x, i2.y,
+            ].join(" ");
 
-        this.dom.setAttributeNS(null, "d", d);
+            this.dom.setAttributeNS(null, "d", d);
+        }
+        else{
+            this.dom.setAttributeNS(null, "d", "");
+        }
     }
 }
 

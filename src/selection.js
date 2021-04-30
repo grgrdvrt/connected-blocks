@@ -12,6 +12,12 @@ export default class Selection {
         }
     }
 
+    set(boxes){
+        this.boxes.concat().forEach(box => this.removeBox(box));
+        this.boxes.length = 0;
+        boxes.forEach(box => this.addBox(box));
+    }
+
     removeBox(box){
         box.deselect();
         const id = this.boxes.indexOf(box);

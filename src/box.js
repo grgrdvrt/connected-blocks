@@ -51,29 +51,23 @@ export default class Box {
     onSelect = e => {
         const isTarget = e.target === this.dom || e.target === this.content;
         if(isTarget && !this.isDragging){
-            this.toggleSelected();
+            if(this.context.selection.boxes.length > 1 && !e.shiftKey){
+                this.context.selection.set([this]);
+            }
+            else if(this.isSelected){
+                this.context.selection.removeBox(this);
+            }
+            else if(e.shiftKey){
+                this.context.selection.addBox(this);
+            }
+            else{
+                this.context.selection.set([this]);
+            }
         }
     }
 
     onEdit = () => {
         this.enableEdition();
-    }
-
-    toggleSelected(){
-        if(this.isSelected){
-            this.removeFromSelection();
-        }
-        else{
-            this.addToSelection();
-        }
-    }
-
-    addToSelection(){
-        this.context.selection.addBox(this);
-    }
-
-    removeFromSelection(){
-        this.context.selection.removeBox(this);
     }
 
     setContent(content){
@@ -116,7 +110,7 @@ export default class Box {
 
     enableEdition(){
         this.dom.classList.add("edition");
-        this.addToSelection();
+        this.context.selection.addBox(this);
         this.disableSelection();
         this.input.focus();
 
