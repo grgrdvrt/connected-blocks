@@ -150,4 +150,14 @@ export default class Box {
     cancelEdition(){
         this.disableEdition();
     }
+
+    getRect(){
+        const bcr = this.dom.getBoundingClientRect();
+        return {
+            x:bcr.x - this.context.stage.x,
+            y:bcr.y - this.context.stage.y,
+            width:bcr.width,
+            height:bcr.height,
+        };
+    }
 }

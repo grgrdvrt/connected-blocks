@@ -6,6 +6,8 @@ export default class Links{
         this.context = context;
         this.links = [];
         this.initDom();
+        this.x = 0;
+        this.y = 0;
     }
 
     initDom(){
@@ -27,12 +29,12 @@ export default class Links{
     }
 
     onTempLinkUpdate = e => {
-        const r1 = this.originBox.dom.getBoundingClientRect();
+        const r1 = this.originBox.getRect();
         this.tempLink.setAttributeNS(null, "x1", r1.x + 0.5 * r1.width);
         this.tempLink.setAttributeNS(null, "y1", r1.y + 0.5 * r1.height);
 
-        this.tempLink.setAttributeNS(null, "x2", e.pageX);
-        this.tempLink.setAttributeNS(null, "y2", e.pageY);
+        this.tempLink.setAttributeNS(null, "x2", e.pageX - this.x);
+        this.tempLink.setAttributeNS(null, "y2", e.pageY - this.y);
     }
 
     onTempLinkReleased = e => {
@@ -63,7 +65,8 @@ export default class Links{
 
     createLink(origin, target){
         const previousLink = this.links.find(link => {
-            return link.origin === origin && link.target === target;
+            return link.origin === origin && link.target === target
+                ||link.origin === target && link.target === origin;
         });
         if(previousLink){
             return previousLink;
@@ -95,5 +98,23 @@ export default class Links{
             return link.origin === box
                 || link.target === box;
         });
+    }
+
+    setPosition(x, y){
+        this.x = x;
+        this.y = y;
+        this.updateViewBox();
+    }
+
+    setSize(width, height){
+        this.width = width;
+        this.height = height;
+        this.updateViewBox();
+    }
+
+    updateViewBox(){
+        this.dom.setAttributeNS(null, "viewBox", `${-this.x} ${-this.y} ${this.width} ${this.height}`);
+        this.dom.setAttributeNS(null, "width", this.width);
+        this.dom.setAttributeNS(null, "height", this.height);
     }
 }

@@ -14,15 +14,15 @@ export default class link{
             classes:"link",
             attributes:{
                 fill:"none",
-                stroke:"#333333",
+                stroke:"#777777",
                 "stroke-width":"2",
             }
         });
     }
 
     update(){
-        const r1 = this.origin.dom.getBoundingClientRect();
-        const r2 = this.target.dom.getBoundingClientRect();
+        const r1 = this.origin.getRect();
+        const r2 = this.target.getRect();
 
         const p1 = {
             x:r1.x + 0.5 * r1.width,
@@ -32,7 +32,7 @@ export default class link{
             x: r2.x + 0.5 * r2.width,
             y: r2.y + 0.5 * r2.height,
         };
-         const inter1 = boxSegmentIntersection(r1, p1, p2);
+        const inter1 = boxSegmentIntersection(r1, p1, p2);
         const inter2 = boxSegmentIntersection(r2, p1, p2);
 
         if(inter1 && inter2){

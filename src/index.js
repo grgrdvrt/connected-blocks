@@ -15,13 +15,14 @@ class Main {
         this.undoStack.enable();
 
         this.links = new Links(this);
-        this.dom.appendChild(this.links.dom);
+        this.stage.dom.appendChild(this.links.dom);
         this.boxes = new Boxes(this);
-        this.dom.appendChild(this.boxes.dom);
+        this.stage.dom.appendChild(this.boxes.dom);
 
         this.selection = new Selection(this);
 
         window.addEventListener("resize", this.onResize);
+        this.onResize();
 
         this.initDebug();
     }
@@ -40,6 +41,7 @@ class Main {
 
     onResize = () => {
         this.stage.updateSize();
+        this.links.setSize(this.stage.width, this.stage.height);
     }
 }
 
