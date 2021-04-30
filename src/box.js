@@ -1,7 +1,8 @@
 import dom from "./utils/dom";
 
 export default class Box {
-    constructor(){
+    constructor(context){
+        this.context = context;
         this.isSelected = false;
         this.initDom();
     }
