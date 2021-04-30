@@ -119,11 +119,28 @@ export default class Box {
         this.addToSelection();
         this.disableSelection();
         this.input.focus();
+
+        this.input.addEventListener("keyup", this.onEditionKeyUp);
     }
 
     disableEdition(){
         this.dom.classList.remove("edition");
         this.enableSelection();
+        this.input.removeEventListener("keyup", this.onEditionKeyUp);
+    }
+
+    onEditionKeyUp = e => {
+        switch(e.key){
+            case "Escape":
+                e.preventDefault();
+                this.cancelEdition();
+                break;
+            case "Enter":
+                if(!e.shiftKey){
+                    this.endEdition();
+                }
+                break;
+        }
     }
 
     endEdition(){

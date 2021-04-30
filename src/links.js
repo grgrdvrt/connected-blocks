@@ -41,7 +41,7 @@ export default class Links{
         let target = e.target;
         while(target && target !== document.body){
             const box = this.context.boxes.getBoxByDom(target);
-            if(box){
+            if(box && box !== this.originBox){
                 this.addLink(this.originBox, box);
                 break;
             }

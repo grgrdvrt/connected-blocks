@@ -45,5 +45,4 @@ export default class BoxMenu{
         this.context.links.startCreatingLink(this.box);
     }
 
-
 }
