@@ -1,4 +1,4 @@
-import dom from "./utils/dom";
+import {dom} from "./utils/dom";
 import Signal from "./utils/signal";
 
 export default class Box {
@@ -12,13 +12,13 @@ export default class Box {
     }
 
     initDom(){
-        this.dom = dom({classes:["box"]});
+        this.dom = dom({classes:"box"});
         this.input = dom({
             type:"textarea",
             parent:this.dom,
-            classes:["box-input"],
+            classes:"box-input",
         });
-        this.content = dom({parent:this.dom, classes:["box-content"]});
+        this.content = dom({parent:this.dom, classes:"box-content"});
     }
 
     enable(){
@@ -59,6 +59,11 @@ export default class Box {
 
     removeFromSelection(){
         this.context.selection.removeBox(this);
+    }
+
+    setContent(content){
+        this.input.value = content;
+        this.content.innerHTML = content.replace(/\n/g, "<br>");
     }
 
     select(){
@@ -111,6 +116,7 @@ export default class Box {
         const content = this.input.value.replace(/\n/g, "<br>");
         this.content.innerHTML = content;
         this.editionEnded.dispatch(content);
+        this.context.updateLinks();
     }
 
     cancelEdition(){

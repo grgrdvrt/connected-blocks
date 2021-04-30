@@ -57,5 +57,7 @@ export default class Selection {
             );
             box.isDragging = true;
         });
+
+        this.context.updateLinks();
     }
 }

@@ -1,4 +1,4 @@
-import dom from "./utils/dom";
+import {dom, svg} from "./utils/dom";
 
 export default class Stage{
     constructor(context){
@@ -9,10 +9,17 @@ export default class Stage{
     initDom(){
         this.dom = dom({classes:["stage"]});
         this.background = dom({
-            classes:["stage-background"],
+            classes:"stage-background",
             parent:this.dom
         });
-        this.boxesContainer = dom({parent:this.dom});
+        this.linksContainer = svg("svg", {
+            classes:"stage-linksContainer",
+            parent:this.dom
+        });
+        this.boxesContainer = dom({
+            classes:"stage-boxesContainer",
+            parent:this.dom
+        });
     }
 
     enable(){
@@ -21,7 +28,7 @@ export default class Stage{
     }
 
     onDoubleClick = e => {
-        this.context.createBox(e.clientX, e.clientY);
+        this.context.startBoxCreation(e.clientX, e.clientY);
     }
 
     onClick = e => {
@@ -34,6 +41,11 @@ export default class Stage{
 
     removeBox(box){
         this.boxesContainer.removeChild(box.dom);
+    }
+
+    addLink(link){
+        this.linksContainer.appendChild(link.dom);
+        link.update();
     }
 
     updateSize(){
