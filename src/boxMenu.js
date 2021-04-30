@@ -42,7 +42,7 @@ export default class BoxMenu{
     }
 
     onLineDown = () => {
-        console.log("lineStarted");
+        this.context.links.startCreatingLink(this.box);
     }
 
 

@@ -17,11 +17,14 @@ export default class Box {
             classes:"box-input",
         });
         this.content = dom({classes:"box-content"});
-        this.dom = dom({classes:"box", children:[
-            this.menu.dom,
-            this.content,
-            this.input,
-        ]});
+        this.dom = dom({
+            classes:"box",
+            children:[
+                this.menu.dom,
+                this.content,
+                this.input,
+            ]
+        });
     }
 
     enable(){

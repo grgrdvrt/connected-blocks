@@ -40,4 +40,8 @@ export default class Boxes{
         const links = this.context.links.getRelatedLinks(box);
         links.forEach(link => this.context.links.removeLink(link));
     }
+
+    getBoxByDom(dom){
+        return this.boxes.find(box => box.dom === dom);
+    }
 }

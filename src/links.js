@@ -12,11 +12,56 @@ export default class Links{
         this.dom = svg("svg", {classes:"links"});
     }
 
+    startCreatingLink(box){
+        document.body.addEventListener("mousemove", this.onTempLinkUpdate);
+        document.body.addEventListener("mouseup", this.onTempLinkReleased);
+        this.originBox = box;
+        this.tempLink = svg("line", {
+            classes:"link",
+            attributes:{
+                stroke:"red",
+                "stroke-width":"2",
+            },
+            parent:this.dom
+        });
+    }
+
+    onTempLinkUpdate = e => {
+        const r1 = this.originBox.dom.getBoundingClientRect();
+        this.tempLink.setAttributeNS(null, "x1", r1.x + 0.5 * r1.width);
+        this.tempLink.setAttributeNS(null, "y1", r1.y + 0.5 * r1.height);
+
+        this.tempLink.setAttributeNS(null, "x2", e.pageX);
+        this.tempLink.setAttributeNS(null, "y2", e.pageY);
+    }
+
+    onTempLinkReleased = e => {
+        document.body.removeEventListener("mousemove", this.onTempLinkUpdate);
+        document.body.removeEventListener("mouseup", this.onTempLinkReleased);
+        let target = e.target;
+        while(target && target !== document.body){
+            const box = this.context.boxes.getBoxByDom(target);
+            if(box){
+                this.addLink(this.originBox, box);
+                break;
+            }
+            target = target.parentNode;
+        }
+        this.dom.removeChild(this.tempLink);
+    }
+
     addLink(origin, target){
+        const previousLink = this.links.find(link => {
+            return link.origin === origin && link.target === target;
+        });
+        if(previousLink){
+            return previousLink;
+        }
         const link = new Link(origin, target);
         this.links.push(link);
         this.dom.appendChild(link.dom);
         link.update();
+        return link;
     }
 
     removeLink(link){
