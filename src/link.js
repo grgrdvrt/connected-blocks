@@ -14,7 +14,7 @@ export default class link{
             classes:"link",
             attributes:{
                 fill:"none",
-                stroke:"black",
+                stroke:"#333333",
                 "stroke-width":"2",
             }
         });

@@ -41,6 +41,32 @@ export default class Selection {
     onStopDrag = e => {
         this.context.dom.removeEventListener("mouseup", this.onStopDrag);
         this.context.dom.removeEventListener("mousemove", this.onDrag);
+
+        const delta = {
+            x:e.pageX - this.initialDragPosition.x,
+            y:e.pageY - this.initialDragPosition.y,
+        };
+        const movedBoxes = this.boxes.concat();
+        this.context.undoStack.addAction({
+            undo:() => {
+                movedBoxes.forEach(box => {
+                    box.setPosition(
+                        box.x - delta.x,
+                        box.y - delta.y,
+                    );
+                });
+                this.context.links.update();
+            },
+            redo:() => {
+                movedBoxes.forEach(box => {
+                    box.setPosition(
+                        box.x + delta.x,
+                        box.y + delta.y,
+                    );
+                });
+                this.context.links.update();
+            }
+        });
     }
 
     onDrag = e => {

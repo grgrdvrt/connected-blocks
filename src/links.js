@@ -42,7 +42,18 @@ export default class Links{
         while(target && target !== document.body){
             const box = this.context.boxes.getBoxByDom(target);
             if(box && box !== this.originBox){
-                this.addLink(this.originBox, box);
+                const link = this.createLink(this.originBox, box);
+                const exec = () => this.addLink(link);
+                const action = this.context.undoStack.addAction({
+                    undo:() => {
+                        this.removeLink(link);
+                    },
+                    redo:() => {
+                        exec();
+                    }
+                });
+                exec();
+
                 break;
             }
             target = target.parentNode;
@@ -50,14 +61,17 @@ export default class Links{
         this.dom.removeChild(this.tempLink);
     }
 
-    addLink(origin, target){
+    createLink(origin, target){
         const previousLink = this.links.find(link => {
             return link.origin === origin && link.target === target;
         });
         if(previousLink){
             return previousLink;
         }
-        const link = new Link(origin, target);
+        return new Link(origin, target);
+    }
+
+    addLink(link){
         this.links.push(link);
         this.dom.appendChild(link.dom);
         link.update();

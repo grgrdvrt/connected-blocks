@@ -15,30 +15,60 @@ export default class Boxes{
         const box = this.createBox(x, y);
         box.enableEdition();
         box.addToSelection();
+
+        this.context.undoStack.addAction({
+            undo:() => {
+                this.removeBox(box);
+            },
+            redo:() => {
+                this.addBox(box);
+            },
+        });
     }
 
     createBox(x, y, defaultContent){
         const box = new Box(this.context);
         box.setPosition(x, y);
-        box.enable();
         if(defaultContent){
             box.setContent(defaultContent);
         }
+        return box;
+    }
+
+    addBox(box){
+        box.enable();
         this.boxes.push(box);
         this.dom.appendChild(box.dom);
         return box;
     }
 
-    deleteBox(box){
+    removeBox(box){
         box.disable();
         this.context.selection.removeBox(box);
+
         const id = this.boxes.indexOf(box);
         if(id !== -1){
             this.boxes.splice(id, 1);
             this.dom.removeChild(box.dom);
         }
+    }
+
+    deleteBox(box){
         const links = this.context.links.getRelatedLinks(box);
-        links.forEach(link => this.context.links.removeLink(link));
+        const exec = () => {
+            this.removeBox(box);
+            links.forEach(link => this.context.links.removeLink(link));
+        };
+        this.context.undoStack.addAction({
+            undo:() => {
+                this.addBox(box);
+                links.forEach(link => this.context.links.addLink(link));
+            },
+            redo:() => {
+                exec();
+            }
+        });
+        exec();
     }
 
     getBoxByDom(dom){
