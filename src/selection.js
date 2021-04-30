@@ -49,11 +49,11 @@ export default class Selection {
         };
         this.boxes.forEach((box, i) => {
             const initPos = this.initialBoxesPositions[i];
-            box.isDragging = true;
             box.setPosition(
                 initPos.x + delta.x,
                 initPos.y + delta.y,
             );
+            box.isDragging = true;
         });
     }
 }

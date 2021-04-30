@@ -47,6 +47,7 @@ export default class Box {
 
     deselect(){
         this.isSelected = false;
+        this.isDragging = false;
         this.dom.classList.remove("selected");
         this.dom.removeEventListener("mousedown", this.onStartDrag);
     }
