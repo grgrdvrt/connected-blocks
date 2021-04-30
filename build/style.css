@@ -2,3 +2,29 @@ html, body {
     margin:0;
     padding:0;
 }
+
+
+.stage{
+    position:relative;
+}
+
+.box{
+    position:absolute;
+    border:solid 1px black;
+    background-color:white;
+    cursor:pointer;
+}
+
+.box .box-menu{
+    display:none;
+    position:aboslute;
+    bottom:0px;
+}
+
+.box.selected{
+    border:solid 2px black;
+}
+
+.box.selected .box-menu{
+    display:box;
+}
