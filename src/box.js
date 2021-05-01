@@ -187,7 +187,7 @@ export default class Box {
             y:this.y,
             width:this.width,
             height:this.height,
-            content:this.displayContent
+            content:this.inputContent
         };
     }
 }

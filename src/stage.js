@@ -51,7 +51,9 @@ export default class Stage{
     onStopDrag = e => {
         document.body.removeEventListener("mousemove", this.onDrag);
         document.body.removeEventListener("mouseup", this.onStopDrag);
-        this.onInertia();
+        if(this.velocity){
+            this.onInertia();
+        }
     }
 
     onDrag = e => {
