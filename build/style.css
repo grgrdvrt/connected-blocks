@@ -46,19 +46,19 @@ html, body {
 
 .box{
     position:absolute;
+    min-width:30px;
+    min-height:30px;
     border-radius:5px;
     background-color:#f5f5f5;
     cursor:pointer;
     pointer-events:all;
-    min-width:30px;
-    min-height:30px;
 }
 
 .box-menu{
     display:none;
     position:absolute;
     bottom:100%;
-    min-width:150px;
+    white-space:nowrap;
 }
 
 .box-menu button{
@@ -66,13 +66,6 @@ html, body {
 }
 
 .box-input{
-    display:none;
-    max-width:500px;
-    max-height:500px;
-    white-space: pre;
-    margin:5px;
-    border:none;
-    outline: 0px solid transparent;
 }
 
 .box-background{
@@ -81,20 +74,16 @@ html, body {
 }
 
 .box-content{
+    min-width:30px;
+    min-height:30px;
     user-select:none;
     margin:5px;
+    white-space: pre;
+    outline: 0px solid transparent;
+    overflow:auto;
 }
 .box-content > *{
     pointer-events:none;
-}
-
-
-.box.edition .box-input{
-    display:block;
-}
-
-.box.edition .box-content{
-    display:none;
 }
 
 .box.selected{
@@ -103,6 +92,11 @@ html, body {
 
 .box.selected .box-menu{
     display:block;
+}
+
+.box.selected .box-contentContainer{
+    overflow:auto;
+    resize:both;
 }
 
 

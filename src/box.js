@@ -8,6 +8,7 @@ import BoxMenu from "./boxMenu";
 export default class Box {
     constructor(context){
         this.context = context;
+        this.isEditing = false;
         this.inputContent = "";
         this.x = 0;
         this.y = 0;
@@ -20,22 +21,21 @@ export default class Box {
 
     initDom(){
         this.menu = new BoxMenu(this, this.context);
-        this.input = dom({
-            // type:"textarea",
-            type:"span",
+        this.content = dom({
+            type:"div",
             role:"textbox",
-            attributes:{
-                contenteditable:true
-            },
-            classes:"box-input",
+            classes:"box-content",
         });
-        this.content = dom({classes:"box-content"});
+
+        this.contentContainer = dom({
+            classes:"box-contentContainer",
+            children:[this.content]
+        });
         this.dom = dom({
             classes:"box",
             children:[
                 this.menu.dom,
-                this.content,
-                this.input,
+                this.contentContainer,
             ]
         });
     }
@@ -84,8 +84,8 @@ export default class Box {
     }
 
     setContent(content){
+        console.error("setContent", content)
         this.inputContent = content;
-        this.input.innerText = content;
         this.displayContent();
     }
 
@@ -116,18 +116,29 @@ export default class Box {
     }
 
     enableEdition(){
+        if(this.isEditing){
+            return;
+        }
+        this.isEditing = true;
         this.dom.classList.add("edition");
         this.context.selection.addBox(this);
         this.disableSelection();
-        placeCaretAtEnd(this.input);
-
-        this.input.addEventListener("keyup", this.onEditionKeyUp);
+        this.displayInput();
+        placeCaretAtEnd(this.content);
+        this.content.setAttribute("contenteditable", true);
+        this.content.addEventListener("keyup", this.onEditionKeyUp);
     }
 
     disableEdition(){
+        if(!this.isEditing){
+            return;
+        }
+        this.isEditing = false;
         this.dom.classList.remove("edition");
         this.enableSelection();
-        this.input.removeEventListener("keyup", this.onEditionKeyUp);
+        this.displayContent();
+        this.content.setAttribute("contenteditable", false);
+        this.content.removeEventListener("keyup", this.onEditionKeyUp);
     }
 
     onEditionKeyUp = e => {
@@ -145,19 +156,16 @@ export default class Box {
     }
 
     endEdition(){
-        this.disableEdition();
-        const newContent = this.input.innerText;
+        if(!this.isEditing){
+            return;
+        }
+        const newContent = this.content.innerText;
         const oldContent = this.inputContent;
         if(newContent !== oldContent){
-            const exec = () => {
-                this.inputContent = newContent;
-                this.displayContent();
-            };
+            const exec = () => this.setContent(newContent);
             this.context.undoStack.addAction({
                 undo:() => {
-                    this.input.innerText = oldContent;
-                    this.inputContent = oldContent;
-                    this.displayContent();
+                    this.setContent(oldContent);
                 },
                 redo:() => {
                     exec();
@@ -165,20 +173,29 @@ export default class Box {
             });
             exec();
         }
+        this.disableEdition();
     }
 
     cancelEdition(){
-        this.input.innerText = this.inputContent;
+        this.displayContent();
         this.disableEdition();
+    }
+
+    displayInput(){
+        this.content.innerText = this.inputContent;
     }
 
     displayContent(){
         const content = this.inputContent.replace(/  \n/g, "<br>");
         if(content !== this.content.innerHTML){
             this.content.innerHTML = content;
-            this.context.links.getRelatedLinks(this)
-                .forEach(link => link.update());
+            this.updateRelatedLinks();
         }
+    }
+
+    updateRelatedLinks(){
+        this.context.links.getRelatedLinks(this)
+            .forEach(link => link.update());
     }
 
     getRect(){
