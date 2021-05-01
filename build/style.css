@@ -67,6 +67,12 @@ html, body {
 
 .box-input{
     display:none;
+    max-width:500px;
+    max-height:500px;
+    white-space: pre;
+    margin:5px;
+    border:none;
+    outline: 0px solid transparent;
 }
 
 .box-background{

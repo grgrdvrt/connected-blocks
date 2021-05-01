@@ -1,4 +1,7 @@
-import {dom} from "./utils/dom";
+import {
+    dom,
+    placeCaretAtEnd,
+} from "./utils/dom";
 
 import BoxMenu from "./boxMenu";
 
@@ -18,7 +21,12 @@ export default class Box {
     initDom(){
         this.menu = new BoxMenu(this, this.context);
         this.input = dom({
-            type:"textarea",
+            // type:"textarea",
+            type:"span",
+            role:"textbox",
+            attributes:{
+                contenteditable:true
+            },
             classes:"box-input",
         });
         this.content = dom({classes:"box-content"});
@@ -77,7 +85,7 @@ export default class Box {
 
     setContent(content){
         this.inputContent = content;
-        this.input.value = content;
+        this.input.innerText = content;
         this.displayContent();
     }
 
@@ -107,18 +115,11 @@ export default class Box {
         this.dom.style.top = this.y + "px";
     }
 
-    setSize(width, height){
-        this.width = width;
-        this.height = height;
-        this.dom.style.width = this.width + "px";
-        this.dom.style.height = this.height + "px";
-    }
-
     enableEdition(){
         this.dom.classList.add("edition");
         this.context.selection.addBox(this);
         this.disableSelection();
-        this.input.focus();
+        placeCaretAtEnd(this.input);
 
         this.input.addEventListener("keyup", this.onEditionKeyUp);
     }
@@ -145,7 +146,7 @@ export default class Box {
 
     endEdition(){
         this.disableEdition();
-        const newContent = this.input.value;
+        const newContent = this.input.innerText;
         const oldContent = this.inputContent;
         if(newContent !== oldContent){
             const exec = () => {
@@ -154,7 +155,7 @@ export default class Box {
             };
             this.context.undoStack.addAction({
                 undo:() => {
-                    this.input.value = oldContent;
+                    this.input.innerText = oldContent;
                     this.inputContent = oldContent;
                     this.displayContent();
                 },
@@ -167,7 +168,7 @@ export default class Box {
     }
 
     cancelEdition(){
-        this.input.value = this.inputContent;
+        this.input.innerText = this.inputContent;
         this.disableEdition();
     }
 
@@ -193,8 +194,6 @@ export default class Box {
     setMemento(memento){
         this.x = memento.x;
         this.y = memento.y;
-        this.width = memento.width;
-        this.height = memento.height;
         this.setContent(memento.content);
     }
 
@@ -202,8 +201,6 @@ export default class Box {
         return {
             x:this.x,
             y:this.y,
-            width:this.width,
-            height:this.height,
             content:this.inputContent
         };
     }
