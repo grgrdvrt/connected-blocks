@@ -145,8 +145,25 @@ export default class Box {
 
     endEdition(){
         this.disableEdition();
-        this.inputContent = this.input.value;
-        this.displayContent();
+        const newContent = this.input.value;
+        const oldContent = this.inputContent;
+        if(newContent !== oldContent){
+            const exec = () => {
+                this.inputContent = newContent;
+                this.displayContent();
+            };
+            this.context.undoStack.addAction({
+                undo:() => {
+                    this.input.value = oldContent;
+                    this.inputContent = oldContent;
+                    this.displayContent();
+                },
+                redo:() => {
+                    exec();
+                }
+            });
+            exec();
+        }
     }
 
     cancelEdition(){
