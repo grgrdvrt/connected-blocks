@@ -36,17 +36,16 @@ export default class Link{
         const r1 = this.origin.getRect();
         const r2 = this.target.getRect();
 
-        const p1 = {
+        const center1 = {
             x:r1.x + 0.5 * r1.width,
             y:r1.y + 0.5 * r1.height,
         };
-        const p2 = {
+        const center2 = {
             x: r2.x + 0.5 * r2.width,
             y: r2.y + 0.5 * r2.height,
         };
-        const inter1 = boxSegmentIntersection(r1, p1, p2);
-        const inter2 = boxSegmentIntersection(r2, p1, p2);
-
+        const inter1 = boxSegmentIntersection(r1, center1, center2);
+        const inter2 = boxSegmentIntersection(r2, center1, center2);
 
         if(inter1 && inter2){
             const {pt:i1, norm:n1, rot:r1} = inter1;
@@ -60,8 +59,8 @@ export default class Link{
                 y:lerp(i2.y, i1.y, Math.abs(n2.y) * 0.3),
             };
 
-            const size1 = this.setHead(this.headOrigin, i1.x, i1.y, r1, makeInheritanceHead);
-            const size2 = this.setHead(this.headTarget, i2.x, i2.y, r2, makeCompositionHead);
+            const size1 = this.setHead(this.headOrigin, i1.x, i1.y, r1, makeInheritanceHead());
+            const size2 = this.setHead(this.headTarget, i2.x, i2.y, r2, makeCompositionHead());
             const d = [
                 "M", i1.x + size1 * n1.x, i1.y + size1 * n1.y,
                 "C", c1.x, c1.y,
@@ -76,8 +75,7 @@ export default class Link{
         }
     }
 
-    setHead(node, x, y, rotation, headBuilder){
-        const headPath = headBuilder();
+    setHead(node, x, y, rotation, headPath){
         node.setAttributeNS(null, "d", headPath.d);
         node.setAttributeNS(null, "transform", `translate(${x}, ${y}) rotate(${rotation})`);
         return headPath.size;
@@ -110,27 +108,30 @@ function makeCompositionHead(){
 
 function boxSegmentIntersection(box, p1, p2){
     const candidates = [
-        {t:() => borderSegmentIntersection(box.x, p1.x, p2.x), norm:{x:-1, y:0}, rot:0},
-        {t:() => borderSegmentIntersection(box.x + box.width, p1.x, p2.x), norm:{x:1, y:0}, rot:180},
-        {t:() => borderSegmentIntersection(box.y, p1.y, p2.y), norm:{x:0, y:-1}, rot:90},
-        {t:() => borderSegmentIntersection(box.y + box.height, p1.y, p2.y), norm:{x:0, y:1}, rot:-90},
+        {edge:box.x, a:p1.x, b:p2.x, norm:{x:-1, y:0}, rot:0},
+        {edge:box.x + box.width, a:p1.x, b:p2.x, norm:{x:1, y:0}, rot:180},
+        {edge:box.y, a:p1.y, b:p2.y, norm:{x:0, y:-1}, rot:90},
+        {edge:box.y + box.height, a:p1.y, b:p2.y, norm:{x:0, y:1}, rot:-90},
     ];
+
     for(let i = 0; i < candidates.length; i++){
         const candidate = candidates[i];
-        candidate.pt = lerpPts(p1, p2, candidate.t());
-        if(isInRectangle(box, candidate.pt)){
-            return candidate;
+        const t = borderSegmentIntersection(candidate.edge, candidate.a, candidate.b);
+        const pt = lerpPts(p1, p2, t);
+        if(isInRectangle(box, pt)){
+            return {norm:candidate.norm, rot:candidate.rot, pt};
         }
     }
     return null;
 }
 
 function borderSegmentIntersection(x, a, b){
-    const d = b - a;
-    if(d === 0) return undefined;
-    else{
-        const t = (x - a) / d;
-        if(t < 0 || t > 1) return undefined;
-        else return t;
+    const diff = b - a;
+    if(diff !== 0){
+        const t = (x - a) / diff;
+        if(t >= 0 && t <= 1) {
+            return t;
+        }
     }
+    return undefined;
 }
