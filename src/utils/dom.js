@@ -24,7 +24,7 @@ export function dom(params){
 
 
 const svgNS = "http://www.w3.org/2000/svg";
-export function svg(type, params){
+export function svg(type, params = {}){
     const element = document.createElementNS(svgNS, type);
     if(params.classes){
         element.setAttributeNS(null, "class", params.classes);

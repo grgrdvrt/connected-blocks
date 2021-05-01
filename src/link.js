@@ -1,7 +1,11 @@
 import {svg} from "./utils/dom";
-import {lerp} from "./utils/maths";
+import {
+    lerp,
+    lerpPts,
+    isInRectangle,
+} from "./utils/maths";
 
-export default class link{
+export default class Link{
     constructor(origin, target){
         this.origin = origin;
         this.target = target;
@@ -10,32 +14,16 @@ export default class link{
     }
 
     initDom(){
-        this.line = svg("path", {
-            classes:"link",
-            attributes:{
-                fill:"none",
-                stroke:"#777777",
-                "stroke-width":"2",
-            }
-        });
-        this.headOrigin = svg("path", {
-            classes:"link",
-            attributes:{
-                fill:"none",
-                stroke:"#777777",
-                "stroke-width":"2",
-            }
-        });
-        this.headTarget = svg("path", {
-            classes:"link",
-            attributes:{
-                fill:"none",
-                stroke:"#777777",
-                "stroke-width":"2",
-            }
-        });
+        this.line = svg("path", {attributes:{fill:"none",}});
+        this.headOrigin = svg("path");
+        this.headTarget = svg("path");
         this.dom = svg("g", {
             classes:"link",
+            attributes:{
+                fill:"#ffffff",
+                stroke:"#777777",
+                "stroke-width":"2",
+            },
             children:[
                 this.line,
                 this.headOrigin,
@@ -72,25 +60,27 @@ export default class link{
                 y:lerp(i2.y, i1.y, Math.abs(n2.y) * 0.3),
             };
 
-            const arr1 = makeInheritanceHead();
-            // const arr2 = makeUsageHead();
-            const arr2 = makeCompositionHead();
+            const size1 = this.setHead(this.headOrigin, i1.x, i1.y, r1, makeInheritanceHead);
+            const size2 = this.setHead(this.headTarget, i2.x, i2.y, r2, makeCompositionHead);
             const d = [
-                "M", i1.x + arr1.size * n1.x, i1.y + arr1.size * n1.y,
+                "M", i1.x + size1 * n1.x, i1.y + size1 * n1.y,
                 "C", c1.x, c1.y,
                 c2.x, c2.y,
-                i2.x + arr2.size * n2.x, i2.y + arr2.size * n2.y,
+                i2.x + size2 * n2.x, i2.y + size2 * n2.y,
             ].join(" ");
-            this.headOrigin.setAttributeNS(null, "d", arr1.d);
-            this.headOrigin.setAttributeNS(null, "transform", `translate(${i1.x}, ${i1.y}) rotate(${r1})`);
-            this.headTarget.setAttributeNS(null, "d", arr2.d);
-            this.headTarget.setAttributeNS(null, "transform", `translate(${i2.x}, ${i2.y}) rotate(${r2})`);
 
             this.line.setAttributeNS(null, "d", d);
         }
         else{
             this.line.setAttributeNS(null, "d", "");
         }
+    }
+
+    setHead(node, x, y, rotation, headBuilder){
+        const headPath = headBuilder();
+        node.setAttributeNS(null, "d", headPath.d);
+        node.setAttributeNS(null, "transform", `translate(${x}, ${y}) rotate(${rotation})`);
+        return headPath.size;
     }
 
     setMemento(memento){
@@ -104,67 +94,43 @@ export default class link{
     }
 }
 
-function makeInheritanceHead(x, y){
+function makeInheritanceHead(){
     const s = 8;
     return {d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`, size:s};
 }
-function makeUsageHead(x, y){
+function makeUsageHead(){
     const s = 8;
     return {d:`M -${s} -${s} L 0 0 l -${s} ${s}`, size:0};
 }
-function makeCompositionHead(x, y){
+function makeCompositionHead(){
     const s = 8;
     return {d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`, size:2 * s};
 }
 
-function lerpPts(p1, p2, t){
-    return {
-        x:lerp(p1.x, p2.x, t),
-        y:lerp(p1.y, p2.y, t),
-    };
-}
-
-function isInBox(box, pt){
-    return pt.x >= box.x
-        && pt.y >= box.y
-        && pt.x <= box.x + box.width
-        && pt.y <= box.y + box.height;
-}
 
 function boxSegmentIntersection(box, p1, p2){
     const candidates = [
-        {pt:vBorderSegmentIntersection(box.x, p1, p2), norm:{x:-1, y:0}, rot:0},
-        {pt:vBorderSegmentIntersection(box.x + box.width, p1, p2), norm:{x:1, y:0}, rot:180},
-        {pt:hBorderSegmentIntersection(box.y, p1, p2), norm:{x:0, y:-1}, rot:90},
-        {pt:hBorderSegmentIntersection(box.y + box.height, p1, p2), norm:{x:0, y:1}, rot:-90},
+        {t:() => borderSegmentIntersection(box.x, p1.x, p2.x), norm:{x:-1, y:0}, rot:0},
+        {t:() => borderSegmentIntersection(box.x + box.width, p1.x, p2.x), norm:{x:1, y:0}, rot:180},
+        {t:() => borderSegmentIntersection(box.y, p1.y, p2.y), norm:{x:0, y:-1}, rot:90},
+        {t:() => borderSegmentIntersection(box.y + box.height, p1.y, p2.y), norm:{x:0, y:1}, rot:-90},
     ];
-    return candidates.filter(candidate => candidate.pt && isInBox(box, candidate.pt))[0];
+    for(let i = 0; i < candidates.length; i++){
+        const candidate = candidates[i];
+        candidate.pt = lerpPts(p1, p2, candidate.t());
+        if(isInRectangle(box, candidate.pt)){
+            return candidate;
+        }
+    }
+    return null;
 }
 
-function vBorderSegmentIntersection(x, p1, p2){
-    const dx = p2.x - p1.x;
-    if(dx === 0){
-        return undefined;
-    }
+function borderSegmentIntersection(x, a, b){
+    const d = b - a;
+    if(d === 0) return undefined;
     else{
-        const t = (x - p1.x) / dx;
-        if(t < 0 || t > 1){
-            return undefined;
-        }
-        return lerpPts(p1, p2, t);
-    }
-}
-
-function hBorderSegmentIntersection(y, p1, p2){
-    const dy = p2.y - p1.y;
-    if(dy === 0){
-        return undefined;
-    }
-    else{
-        const t = (y - p1.y) / dy;
-        if(t < 0 || t > 1){
-            return undefined;
-        }
-        return lerpPts(p1, p2, t);
+        const t = (x - a) / d;
+        if(t < 0 || t > 1) return undefined;
+        else return t;
     }
 }
