@@ -50,8 +50,17 @@ html, body {
     min-height:30px;
     border-radius:5px;
     background-color:#f5f5f5;
-    cursor:pointer;
+    border:solid 2px transparent;
     pointer-events:all;
+}
+
+.box:hover{
+    border:solid 2px #cccccc;
+}
+
+
+.box.selected{
+    border:solid 2px #777777;
 }
 
 .box-menu{
@@ -61,42 +70,54 @@ html, body {
     white-space:nowrap;
 }
 
-.box-menu button{
-    user-select:none;
+.box.selected .box-menu{
+    display:block;
 }
 
-.box-input{
+.box-menu button{
+    user-select:none;
 }
 
 .box-background{
     width:100%;
     height:100%;
 }
-
 .box-content{
+    overflow:auto;
+}
+
+.box.selected .box-content{
+    resize:both;
+}
+
+.box-content-display{
     min-width:30px;
     min-height:30px;
     user-select:none;
     margin:5px;
     white-space: pre;
+    cursor:pointer;
+}
+
+.box-content-input{
+    min-width:30px;
+    min-height:30px;
+    margin:5px;
+    white-space: pre;
     outline: 0px solid transparent;
     overflow:auto;
-}
-.box-content > *{
-    pointer-events:none;
+    display:none;
 }
 
-.box.selected{
-    border:solid 2px #777777;
+.box-content.edition .box-content-display{
+    display:none;
 }
-
-.box.selected .box-menu{
+.box-content.edition .box-content-input{
     display:block;
 }
 
-.box.selected .box-contentContainer{
-    overflow:auto;
-    resize:both;
+.box-content-display > *{
+    pointer-events:none;
 }
 
 

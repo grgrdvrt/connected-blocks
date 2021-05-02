@@ -1,5 +1,5 @@
-import {dom, svg} from "./utils/dom";
-import Box from "./box";
+import {dom, svg} from "../utils/dom";
+import Box from "./Box";
 
 let nextId = 0;
 export default class Boxes{

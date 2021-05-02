@@ -1,9 +1,9 @@
-import {dom} from "./utils/dom";
+import {dom} from "../utils/dom";
 
 export default class BoxMenu{
-    constructor(box, context){
-        this.box = box;
+    constructor(context, box){
         this.context = context;
+        this.box = box;
         this.initDom();
     }
 
