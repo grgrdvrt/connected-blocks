@@ -91,7 +91,7 @@ export default class Selection {
             box.isDragging = true;
         });
 
-        (new Set(...this.boxes.map(box => this.context.links.getRelatedLinks(box))))
+        (new Set(this.boxes.map(box => this.context.links.getRelatedLinks(box)).flat()))
             .forEach(link => link.update());
     }
 }
