@@ -4,6 +4,7 @@ import {
     lerpPts,
     isInRectangle,
 } from "../utils/maths";
+import LinkHead, {headTypes} from "./LinkHead";
 
 export default class Link{
     constructor(context, origin, target){
@@ -18,8 +19,11 @@ export default class Link{
 
     initDom(){
         this.line = svg("path", {attributes:{fill:"none",}});
-        this.headOrigin = svg("path");
-        this.headTarget = svg("path");
+        this.headOrigin = new LinkHead();
+        this.headTarget = new LinkHead();
+        const types = Object.values(headTypes);
+        this.headOrigin.setType(types[Math.floor(Math.random() * types.length)]);
+        this.headTarget.setType(types[Math.floor(Math.random() * types.length)]);
         this.dom = svg("g", {
             classes:"link",
             attributes:{
@@ -29,8 +33,8 @@ export default class Link{
             },
             children:[
                 this.line,
-                this.headOrigin,
-                this.headTarget,
+                this.headOrigin.dom,
+                this.headTarget.dom,
             ]
         });
     }
@@ -89,8 +93,10 @@ export default class Link{
                 y:lerp(i2.y, i1.y, Math.abs(n2.y) * 0.3),
             };
 
-            const size1 = this.setHead(this.headOrigin, i1.x, i1.y, r1, makeInheritanceHead());
-            const size2 = this.setHead(this.headTarget, i2.x, i2.y, r2, makeNoneHead());
+            this.headOrigin.update(i1.x, i1.y, r1);
+            this.headTarget.update(i2.x, i2.y, r2);
+            const size1 = this.headOrigin.getSize();
+            const size2 = this.headTarget.getSize();
             const d = [
                 "M", i1.x + size1 * n1.x, i1.y + size1 * n1.y,
                 "C", c1.x, c1.y,
@@ -105,12 +111,6 @@ export default class Link{
         }
     }
 
-    setHead(node, x, y, rotation, headPath){
-        node.setAttributeNS(null, "d", headPath.d);
-        node.setAttributeNS(null, "transform", `translate(${x}, ${y}) rotate(${rotation})`);
-        return headPath.size;
-    }
-
     setMemento(memento){
     }
 
@@ -122,21 +122,6 @@ export default class Link{
     }
 }
 
-function makeNoneHead(){
-    return {d:"", size:0};
-}
-function makeInheritanceHead(){
-    const s = 8;
-    return {d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`, size:s};
-}
-function makeUsageHead(){
-    const s = 8;
-    return {d:`M -${s} -${s} L 0 0 l -${s} ${s}`, size:0};
-}
-function makeCompositionHead(){
-    const s = 8;
-    return {d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`, size:2 * s};
-}
 
 
 function boxSegmentIntersection(box, p1, p2){

@@ -1,6 +1,7 @@
 import Stage from "./stage";
 import Boxes from "./box/Boxes";
 import Links from "./link/Links";
+import LinkMenu from "./link/LinkMenu";
 import Selection from "./selection";
 import UndoStack from "./undoStack";
 
@@ -18,6 +19,7 @@ class Main {
         this.stage.dom.appendChild(this.links.dom);
         this.boxes = new Boxes(this);
         this.stage.dom.appendChild(this.boxes.dom);
+        this.linkMenu = new LinkMenu(this);
 
         this.selection = new Selection(this);
 
