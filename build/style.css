@@ -91,8 +91,8 @@ html, body {
 }
 
 .box-content-display{
-    min-width:30px;
-    min-height:30px;
+    min-width:calc(100% - 10px);
+    min-height:calc(100% - 10px);
     user-select:none;
     margin:5px;
     cursor:pointer;
