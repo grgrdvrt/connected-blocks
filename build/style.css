@@ -122,4 +122,10 @@ html, body {
 
 .link{
     pointer-events:all;
+    cursor:pointer;
+}
+
+
+.link.selected{
+    stroke-width:3;
 }

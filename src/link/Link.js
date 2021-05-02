@@ -1,14 +1,17 @@
-import {svg} from "./utils/dom";
+import {dom, svg} from "../utils/dom";
 import {
     lerp,
     lerpPts,
     isInRectangle,
-} from "./utils/maths";
+} from "../utils/maths";
 
 export default class Link{
-    constructor(origin, target){
+    constructor(context, origin, target){
+        this.context = context;
         this.origin = origin;
         this.target = target;
+
+        this.isSelected = false;
 
         this.initDom();
     }
@@ -30,6 +33,33 @@ export default class Link{
                 this.headTarget,
             ]
         });
+    }
+
+    enable(){
+        this.dom.addEventListener("click", this.onClick);
+    }
+
+    disable(){
+        this.dom.removeEventListener("click", this.onClick);
+    }
+
+    onClick = e => {
+        if(this.isSelected){
+            this.context.selection.removeLink(this);
+        }
+        else{
+            this.context.selection.setLinks([this]);
+        }
+    }
+
+    select(){
+        this.isSelected = true;
+        this.dom.classList.add("selected");
+    }
+
+    deselect(){
+        this.isSelected = false;
+        this.dom.classList.remove("selected");
     }
 
     update(){
@@ -60,7 +90,7 @@ export default class Link{
             };
 
             const size1 = this.setHead(this.headOrigin, i1.x, i1.y, r1, makeInheritanceHead());
-            const size2 = this.setHead(this.headTarget, i2.x, i2.y, r2, makeCompositionHead());
+            const size2 = this.setHead(this.headTarget, i2.x, i2.y, r2, makeNoneHead());
             const d = [
                 "M", i1.x + size1 * n1.x, i1.y + size1 * n1.y,
                 "C", c1.x, c1.y,
@@ -92,6 +122,9 @@ export default class Link{
     }
 }
 
+function makeNoneHead(){
+    return {d:"", size:0};
+}
 function makeInheritanceHead(){
     const s = 8;
     return {d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`, size:s};

@@ -1,5 +1,5 @@
-import {svg} from "./utils/dom";
-import Link from "./link";
+import {svg} from "../utils/dom";
+import Link from "./Link";
 
 export default class Links{
     constructor(context){
@@ -71,13 +71,14 @@ export default class Links{
         if(previousLink){
             return previousLink;
         }
-        return new Link(origin, target);
+        return new Link(this.context, origin, target);
     }
 
     addLink(link){
         this.links.push(link);
         this.dom.appendChild(link.dom);
         link.update();
+        link.enable();
         return link;
     }
 
@@ -86,6 +87,7 @@ export default class Links{
         if(id !== -1){
             this.links.splice(id, 1);
             this.dom.removeChild(link.dom);
+            link.disable();
         }
     }
 

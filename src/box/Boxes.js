@@ -15,7 +15,7 @@ export default class Boxes{
 
     startBoxCreation(x, y){
         const box = this.createBox(x, y);
-        this.context.selection.set([box]);
+        this.context.selection.setBoxes([box]);
         box.enableEdition();
 
         const exec = () => this.addBox(box);

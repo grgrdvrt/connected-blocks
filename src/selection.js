@@ -2,6 +2,7 @@ export default class Selection {
     constructor(context){
         this.context = context;
         this.boxes = [];
+        this.links = [];
         this.isDragging = false;
     }
 
@@ -12,12 +13,6 @@ export default class Selection {
         }
     }
 
-    set(boxes){
-        this.boxes.concat().forEach(box => this.removeBox(box));
-        this.boxes.length = 0;
-        boxes.forEach(box => this.addBox(box));
-    }
-
     removeBox(box){
         box.deselect();
         const id = this.boxes.indexOf(box);
@@ -26,11 +21,42 @@ export default class Selection {
         }
     }
 
+    setBoxes(boxes){
+        this.boxes.concat().forEach(box => this.removeBox(box));
+        this.boxes.length = 0;
+        boxes.forEach(box => this.addBox(box));
+    }
+
+    addLink(link){
+        link.select();
+        if(!this.links.includes(link)){
+            this.links.push(link);
+        }
+    }
+
+    removeLink(link){
+        link.deselect();
+        const id = this.links.indexOf(link);
+        if(id !== -1){
+            this.links.splice(id, 1);
+        }
+    }
+
+    setLinks(links){
+        this.links.concat().forEach(link => this.removeLink(link));
+        this.links.length = 0;
+        links.forEach(link => this.addLink(link));
+    }
+
     clear(){
         this.boxes.forEach(box => {
             box.deselect();
         });
         this.boxes.length = 0;
+        this.links.forEach(link => {
+            link.deselect();
+        });
+        this.links.length = 0;
         this.context.links.update();
     }
 

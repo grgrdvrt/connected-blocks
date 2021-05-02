@@ -52,7 +52,7 @@ export default class Box {
         const isTarget = e.target === this.dom || e.target === this.content.display;
         if(isTarget && !this.isDragging){
             if(this.context.selection.boxes.length > 1 && !e.shiftKey){
-                this.context.selection.set([this]);
+                this.context.selection.setBoxes([this]);
             }
             else if(this.isSelected){
                 this.context.selection.removeBox(this);
@@ -61,7 +61,7 @@ export default class Box {
                 this.context.selection.addBox(this);
             }
             else{
-                this.context.selection.set([this]);
+                this.context.selection.setBoxes([this]);
             }
         }
     }

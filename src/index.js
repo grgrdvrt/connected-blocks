@@ -1,6 +1,6 @@
 import Stage from "./stage";
 import Boxes from "./box/Boxes";
-import Links from "./links";
+import Links from "./link/Links";
 import Selection from "./selection";
 import UndoStack from "./undoStack";
 
