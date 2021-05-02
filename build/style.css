@@ -95,7 +95,6 @@ html, body {
     min-height:30px;
     user-select:none;
     margin:5px;
-    white-space: pre;
     cursor:pointer;
 }
 

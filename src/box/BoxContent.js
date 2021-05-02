@@ -73,7 +73,6 @@ export default class BoxContent{
         this.dom.classList.remove("edition");
         this.box.enableSelection();
         this.displayContent();
-        this.input.setAttribute("contenteditable", false);
         this.input.removeEventListener("keyup", this.onEditionKeyUp);
     }
 
@@ -126,6 +125,7 @@ export default class BoxContent{
         if(content !== this.display.innerHTML){
             this.display.innerHTML = content;
             this.box.updateRelatedLinks();
+            setTimeout(() => this.box.updateRelatedLinks(), 300);
         }
     }
 }
