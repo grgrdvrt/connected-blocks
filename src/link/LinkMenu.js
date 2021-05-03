@@ -8,11 +8,29 @@ export default class LinkMenu{
     }
 
     initDom(){
-        this.dom = dom({classes:"linkMenu"});
         this.originMenu = new ArrowMenu();
+        this.targetMenu = new ArrowMenu();
+        this.dom = dom({
+            classes:"linkMenu",
+            children:[
+                this.originMenu.dom,
+                this.targetMenu.dom,
+            ]
+        });
     }
 
-    setLink(link){
+    open(link){
+        this.dom.classList.add("opened");
         this.link = link;
+        this.originMenu.setLinkHead(this.link.headOrigin);
+        this.targetMenu.setLinkHead(this.link.headTarget);
+        this.originMenu.enable();
+        this.targetMenu.enable();
+    }
+
+    close(){
+        this.dom.classList.remove("opened");
+        this.originMenu.disable();
+        this.targetMenu.disable();
     }
 }

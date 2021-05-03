@@ -19,8 +19,8 @@ export default class Link{
 
     initDom(){
         this.line = svg("path", {attributes:{fill:"none",}});
-        this.headOrigin = new LinkHead();
-        this.headTarget = new LinkHead();
+        this.headOrigin = new LinkHead(this);
+        this.headTarget = new LinkHead(this);
         const types = Object.values(headTypes);
         this.headOrigin.setType(types[Math.floor(Math.random() * types.length)]);
         this.headTarget.setType(types[Math.floor(Math.random() * types.length)]);
