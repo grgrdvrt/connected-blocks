@@ -1,5 +1,6 @@
 import {dom} from "../utils/dom";
 import ArrowMenu from "./ArrowMenu";
+import {cubic, lerp} from "../utils/maths";
 
 export default class LinkMenu{
     constructor(context){
@@ -26,9 +27,12 @@ export default class LinkMenu{
         this.link = link;
         this.originMenu.setLinkHead(this.link.headOrigin);
         this.targetMenu.setLinkHead(this.link.headTarget);
+        const {x:ox, y:oy} = this.link.headOrigin;
+        const {x:tx, y:ty} = this.link.headTarget;
+        console.log(ox, oy, tx, ty);
         Object.assign(this.deleteButton.style, {
-            top:(this.link.headOrigin.y + this.link.headTarget.y)/2 + "px",
-            left:(this.link.headOrigin.x + this.link.headTarget.x)/2 + "px",
+            left:cubic(ox, lerp(ox, tx, 0.3), lerp(tx, ox, 0.3), tx, 0.5) + "px",
+            top:cubic(oy, lerp(oy, ty, 0.3), lerp(ty, oy, 0.3), ty, 0.5) + "px",
         });
         this.originMenu.enable();
         this.targetMenu.enable();

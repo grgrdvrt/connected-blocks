@@ -7,13 +7,23 @@ export default class Selection {
     }
 
     addBox(box){
-        box.select();
-        if(!this.boxes.includes(box)){
-            this.boxes.push(box);
-        }
+        this._addBox(box);
+        this.context.selectionMenu.updateVisibility();
     }
 
     removeBox(box){
+        this._removeBox(box);
+        this.context.selectionMenu.updateVisibility();
+    }
+
+    setBoxes(boxes){
+        this.boxes.concat().forEach(box => this._removeBox(box));
+        this.boxes.length = 0;
+        boxes.forEach(box => this._addBox(box));
+        this.context.selectionMenu.updateVisibility();
+    }
+
+    _removeBox(box){
         box.deselect();
         const id = this.boxes.indexOf(box);
         if(id !== -1){
@@ -21,10 +31,11 @@ export default class Selection {
         }
     }
 
-    setBoxes(boxes){
-        this.boxes.concat().forEach(box => this.removeBox(box));
-        this.boxes.length = 0;
-        boxes.forEach(box => this.addBox(box));
+    _addBox(box){
+        box.select();
+        if(!this.boxes.includes(box)){
+            this.boxes.push(box);
+        }
     }
 
     addLink(link){
@@ -58,6 +69,7 @@ export default class Selection {
         });
         this.links.length = 0;
         this.context.links.update();
+        this.context.selectionMenu.updateVisibility();
     }
 
     startDrag(x, y){
@@ -120,5 +132,7 @@ export default class Selection {
 
         (new Set(this.boxes.map(box => this.context.links.getRelatedLinks(box)).flat()))
             .forEach(link => link.update());
+
+        this.context.selectionMenu.update();
     }
 }

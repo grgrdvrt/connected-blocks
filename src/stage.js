@@ -18,10 +18,14 @@ export default class Stage{
     initDom(){
         this.background = dom({classes:"stage-background"});
         this.selectionRect = dom({classes:"stage-selectionRect"});
+        this.fixedDom = dom({classes:"stage-container"});
+        this.pannableDom = dom({classes:"stage-container"});
         this.dom = dom({
             classes:"stage",
             children:[
                 this.background,
+                this.fixedDom,
+                this.pannableDom
             ]
         });
     }
@@ -136,6 +140,7 @@ export default class Stage{
     }
 
     onInertia = () => {
+        if(!this.velocity)return;
         this.velocity.x *= FRICTION;
         this.velocity.y *= FRICTION;
         this.setPosition(
@@ -154,10 +159,8 @@ export default class Stage{
     setPosition(x, y){
         this.x = x;
         this.y = y;
-        this.context.boxes.dom.style.left = this.x + "px";
-        this.context.boxes.dom.style.top = this.y + "px";
-        this.context.linkMenu.dom.style.left = this.x + "px";
-        this.context.linkMenu.dom.style.top = this.y + "px";
+        this.pannableDom.style.left = this.x + "px";
+        this.pannableDom.style.top = this.y + "px";
         this.context.links.setPosition(this.x, this.y);
     }
 

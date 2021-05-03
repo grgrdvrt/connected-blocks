@@ -29,3 +29,10 @@ export function boxesIntersection(a, b){
     const height = Math.max(yMax - yMin);
     return {x:xMin, y:yMin, width, height};
 }
+
+export function cubic(a, b, c, d, t){
+    const t2 = t*t;
+    const ot = 1 - t;
+    const ot2 = ot * ot;
+    return a*ot2*ot + 3*b*ot2*t + 3*c*ot*t2 + d*t2*t;
+}

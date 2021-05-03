@@ -3,6 +3,7 @@ import Boxes from "./box/Boxes";
 import Links from "./link/Links";
 import LinkMenu from "./link/LinkMenu";
 import Selection from "./selection";
+import SelectionMenu from "./SelectionMenu";
 import UndoStack from "./undoStack";
 
 class Main {
@@ -16,11 +17,14 @@ class Main {
         this.undoStack.enable();
 
         this.links = new Links(this);
-        this.stage.dom.appendChild(this.links.dom);
+        this.stage.fixedDom.appendChild(this.links.dom);
         this.boxes = new Boxes(this);
-        this.stage.dom.appendChild(this.boxes.dom);
+        this.stage.pannableDom.appendChild(this.boxes.dom);
         this.linkMenu = new LinkMenu(this);
-        this.stage.dom.appendChild(this.linkMenu.dom);
+        this.stage.pannableDom.appendChild(this.linkMenu.dom);
+
+        this.selectionMenu = new SelectionMenu(this);
+        this.stage.pannableDom.appendChild(this.selectionMenu.dom);
 
         this.selection = new Selection(this);
 

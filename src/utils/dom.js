@@ -14,6 +14,9 @@ export function dom(params){
     if(params.parent){
         params.parent.appendChild(element);
     }
+    if(params.styles){
+        Object.assign(element.styles, params.styles);
+    }
     if(params.attributes){
         for(let attrName in params.attributes){
             element.setAttribute(attrName, params.attributes[attrName]);
