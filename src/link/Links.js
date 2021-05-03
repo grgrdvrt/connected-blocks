@@ -1,10 +1,13 @@
 import {svg} from "../utils/dom";
 import Link from "./Link";
+import {headTypes} from "./LinkHead";
 
 export default class Links{
     constructor(context){
         this.context = context;
         this.links = [];
+        this.lastOriginType = headTypes.none;
+        this.lastTargetType = headTypes.arrow;
         this.initDom();
         this.x = 0;
         this.y = 0;
@@ -55,6 +58,7 @@ export default class Links{
                     }
                 });
                 exec();
+                this.context.selection.setLinks([link]);
 
                 break;
             }
@@ -71,7 +75,10 @@ export default class Links{
         if(previousLink){
             return previousLink;
         }
-        return new Link(this.context, origin, target);
+        const newLink = new Link(this.context, origin, target);
+        newLink.headOrigin.setType(this.lastOriginType);
+        newLink.headTarget.setType(this.lastTargetType);
+        return newLink;
     }
 
     addLink(link){

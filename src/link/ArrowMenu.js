@@ -2,7 +2,8 @@ import {headTypes} from "./LinkHead";
 import {dom, svg} from "../utils/dom";
 
 export default class ArrowMenu{
-    constructor(){
+    constructor(setDefaultFunc){
+        this.setDefaultFunc = setDefaultFunc;
         this.initDom();
     }
 
@@ -53,7 +54,9 @@ export default class ArrowMenu{
     onClick = e => {
         const id = e.target.dataset.id;
         if(id !== undefined){
-            this.linkHead.setType(Object.values(headTypes)[id]);
+            const type = Object.values(headTypes)[id];
+            this.setDefaultFunc(type);
+            this.linkHead.setType(type);
             this.linkHead.link.update();
         }
     }

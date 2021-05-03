@@ -22,8 +22,6 @@ export default class Link{
         this.headOrigin = new LinkHead(this);
         this.headTarget = new LinkHead(this);
         const types = Object.values(headTypes);
-        this.headOrigin.setType(types[Math.floor(Math.random() * types.length)]);
-        this.headTarget.setType(types[Math.floor(Math.random() * types.length)]);
         this.dom = svg("g", {
             classes:"link",
             attributes:{
@@ -59,11 +57,13 @@ export default class Link{
     select(){
         this.isSelected = true;
         this.dom.classList.add("selected");
+        this.context.linkMenu.open(this);
     }
 
     deselect(){
         this.isSelected = false;
         this.dom.classList.remove("selected");
+        this.context.linkMenu.close();
     }
 
     update(){
