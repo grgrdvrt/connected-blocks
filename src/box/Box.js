@@ -99,25 +99,27 @@ export default class Box {
     }
 
     stopListeningResize(){
-
         const {width, height} = this.content.dom.style;
         const {width:oldWidth, height:oldHeight} = this.initialContentSize;
-        this.context.undoStack.addAction({
-            undo:() => {
-                Object.assign(this.content.dom.style, {
-                    width:oldWidth,
-                    height:oldHeight,
-                });
-                this.updateRelatedLinks();
-            },
-            redo:() => {
-                Object.assign(this.content.dom.style, {
-                    width:width,
-                    height:height,
-                });
-                this.updateRelatedLinks();
-            }
-        });
+        if((width || height) && (width !== oldWidth || height !== oldWidth)){
+            this.context.undoStack.addAction({
+                description:"resize box",
+                undo:() => {
+                    Object.assign(this.content.dom.style, {
+                        width:oldWidth,
+                        height:oldHeight,
+                    });
+                    this.updateRelatedLinks();
+                },
+                redo:() => {
+                    Object.assign(this.content.dom.style, {
+                        width:width,
+                        height:height,
+                    });
+                    this.updateRelatedLinks();
+                }
+            });
+        }
         cancelAnimationFrame(this.resizeRaf);
     }
 

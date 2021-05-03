@@ -16,10 +16,11 @@ export default class Boxes{
     startBoxCreation(x, y){
         const box = this.createBox(x, y);
         this.context.selection.setBoxes([box]);
-        box.enableEdition();
+        box.content.enableEdition();
 
         const exec = () => this.addBox(box);
         this.context.undoStack.addAction({
+            description:"add box",
             undo:() => {
                 this.removeBox(box);
             },
@@ -66,6 +67,7 @@ export default class Boxes{
             links.forEach(link => this.context.links.removeLink(link));
         };
         this.context.undoStack.addAction({
+            description:"delete box",
             undo:() => {
                 this.addBox(box);
                 links.forEach(link => this.context.links.addLink(link));

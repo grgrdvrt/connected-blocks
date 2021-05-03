@@ -50,6 +50,7 @@ export default class Links{
                 const link = this.createLink(this.originBox, box);
                 const exec = () => this.addLink(link);
                 const action = this.context.undoStack.addAction({
+                    description:"add link",
                     undo:() => {
                         this.removeLink(link);
                     },

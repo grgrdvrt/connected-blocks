@@ -81,6 +81,7 @@ export default class Selection {
         };
         const movedBoxes = this.boxes.concat();
         this.context.undoStack.addAction({
+            description:"move boxes",
             undo:() => {
                 movedBoxes.forEach(box => {
                     box.setPosition(

@@ -99,6 +99,7 @@ export default class BoxContent{
         if(newContent !== oldContent){
             const exec = () => this.setValue(newContent);
             this.context.undoStack.addAction({
+                description:"edit box",
                 undo:() => {
                     this.setValue(oldContent);
                 },
