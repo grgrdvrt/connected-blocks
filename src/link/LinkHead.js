@@ -52,6 +52,7 @@ export default class LinkHead{
     update(x, y, rotation){
         this.x = x;
         this.y = y;
+        this.rotation = rotation;
         this.dom.setAttributeNS(null, "transform", `translate(${x}, ${y}) rotate(${rotation})`);
     }
 }

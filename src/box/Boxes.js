@@ -16,7 +16,6 @@ export default class Boxes{
     startBoxCreation(x, y){
         const box = this.createBox(x, y);
         this.context.selection.setBoxes([box]);
-        box.content.enableEdition();
 
         const exec = () => this.addBox(box);
         this.context.undoStack.addAction({
@@ -29,6 +28,7 @@ export default class Boxes{
             },
         });
         exec();
+        box.content.enableEdition();
     }
 
     createBox(x, y, defaultContent){

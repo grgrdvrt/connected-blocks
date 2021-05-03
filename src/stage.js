@@ -89,6 +89,8 @@ export default class Stage{
         this.y = y;
         this.context.boxes.dom.style.left = this.x + "px";
         this.context.boxes.dom.style.top = this.y + "px";
+        this.context.linkMenu.dom.style.left = this.x + "px";
+        this.context.linkMenu.dom.style.top = this.y + "px";
         this.context.links.setPosition(this.x, this.y);
     }
 

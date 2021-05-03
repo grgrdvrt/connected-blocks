@@ -2,7 +2,8 @@ import {headTypes} from "./LinkHead";
 import {dom, svg} from "../utils/dom";
 
 export default class ArrowMenu{
-    constructor(setDefaultFunc){
+    constructor(context, setDefaultFunc){
+        this.context = context;
         this.setDefaultFunc = setDefaultFunc;
         this.initDom();
     }
@@ -55,9 +56,23 @@ export default class ArrowMenu{
         const id = e.target.dataset.id;
         if(id !== undefined){
             const type = Object.values(headTypes)[id];
+            const prevType = this.linkHead.type;
             this.setDefaultFunc(type);
-            this.linkHead.setType(type);
-            this.linkHead.link.update();
+            const exec = () => {
+                this.linkHead.setType(type);
+                this.linkHead.link.update();
+            };
+            this.context.undoStack.addAction({
+                description:"set link head type",
+                undo:() => {
+                    this.linkHead.setType(prevType);
+                    this.linkHead.link.update();
+                },
+                redo:() => {
+                    exec();
+                },
+            });
+            exec();
         }
     }
 
@@ -66,6 +81,7 @@ export default class ArrowMenu{
         Object.assign(this.dom.style, {
             top:linkHead.y + "px",
             left:linkHead.x + "px",
+            transform:`translate(-50%, -50%) rotate(${linkHead.rotation}deg) translate(-80%, -60%)`
         });
     }
 }

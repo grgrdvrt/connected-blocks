@@ -8,8 +8,8 @@ export default class LinkMenu{
     }
 
     initDom(){
-        this.originMenu = new ArrowMenu(type => this.context.links.lastOriginType = type);
-        this.targetMenu = new ArrowMenu(type => this.context.links.lastTargetType = type);
+        this.originMenu = new ArrowMenu(this.context, type => this.context.links.lastOriginType = type);
+        this.targetMenu = new ArrowMenu(this.context, type => this.context.links.lastTargetType = type);
         this.dom = dom({
             classes:"linkMenu",
             children:[
