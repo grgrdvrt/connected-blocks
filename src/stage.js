@@ -1,4 +1,5 @@
 import {dom} from "./utils/dom";
+import {boxesIntersection} from "./utils/maths";
 
 const FRICTION = 0.9;
 const MIN_SPEED = 0.5;
@@ -7,12 +8,16 @@ export default class Stage{
         this.context = context;
         this.initDom();
 
+        this.hasSelected = false;
+        this.hasPanned = false;
+
         this.x = 0;
         this.y = 0;
     }
 
     initDom(){
         this.background = dom({classes:"stage-background"});
+        this.selectionRect = dom({classes:"stage-selectionRect"});
         this.dom = dom({
             classes:"stage",
             children:[
@@ -24,7 +29,7 @@ export default class Stage{
     enable(){
         this.background.addEventListener("dblclick", this.onDoubleClick);
         this.background.addEventListener("click", this.onClick);
-        this.background.addEventListener("mousedown", this.onStartDrag);
+        this.background.addEventListener("mousedown", this.onMouseDown);
     }
 
     onDoubleClick = e => {
@@ -32,10 +37,23 @@ export default class Stage{
     }
 
     onClick = e => {
-        this.context.selection.clear();
+        if(!this.hasSelected && !this.hasPanned){
+            this.context.selection.clear();
+        }
+        this.hasSelected = false;
+        this.hasPanned = false;
     }
 
-    onStartDrag = e => {
+    onMouseDown = e => {
+        if(e.shiftKey){
+            this.onStartSelect(e);
+        }
+        else{
+            this.onStartPan(e);
+        }
+    }
+
+    onStartPan = e => {
         this.initialDragMouse = {
             x:e.pageX,
             y:e.pageY,
@@ -44,19 +62,21 @@ export default class Stage{
             x:this.x,
             y:this.y,
         };
-        document.body.addEventListener("mousemove", this.onDrag);
-        document.body.addEventListener("mouseup", this.onStopDrag);
+        document.body.addEventListener("mousemove", this.onPan);
+        document.body.addEventListener("mouseup", this.onStopPan);
+        this.hasPanned = true;
     }
 
-    onStopDrag = e => {
-        document.body.removeEventListener("mousemove", this.onDrag);
-        document.body.removeEventListener("mouseup", this.onStopDrag);
+    onStopPan = e => {
+        document.body.removeEventListener("mousemove", this.onPan);
+        document.body.removeEventListener("mouseup", this.onStopPan);
+        this.hasPanned = Boolean(this.velocity);
         if(this.velocity){
             this.onInertia();
         }
     }
 
-    onDrag = e => {
+    onPan = e => {
         const delta = {
             x:e.pageX - this.initialDragMouse.x,
             y:e.pageY - this.initialDragMouse.y,
@@ -71,6 +91,50 @@ export default class Stage{
         );
     }
 
+    onStartSelect = e => {
+        this.initialDragMouse = {
+            x:e.pageX,
+            y:e.pageY,
+        };
+        this.initialBoxesSelection = this.context.selection.boxes.concat();
+        document.body.addEventListener("mousemove", this.onSelect);
+        document.body.addEventListener("mouseup", this.onStopSelect);
+        this.dom.appendChild(this.selectionRect);
+        Object.assign(this.selectionRect.style, {
+            top:this.initialDragMouse.y + "px",
+            left:this.initialDragMouse.x + "px",
+            width:"0px",
+            height:"0px",
+        });
+    }
+
+    onStopSelect = e => {
+        document.body.removeEventListener("mousemove", this.onSelect);
+        document.body.removeEventListener("mouseup", this.onStopSelect);
+        this.dom.removeChild(this.selectionRect);
+        this.hasSelected = this.initialBoxesSelection.length !== this.context.selection.boxes.length;
+    }
+
+    onSelect = e => {
+        const selectionRect = {
+            x:Math.min(e.pageX, this.initialDragMouse.x) - this.x,
+            y:Math.min(e.pageY, this.initialDragMouse.y) - this.y,
+            width:Math.abs(e.pageX - this.initialDragMouse.x),
+            height:Math.abs(e.pageY - this.initialDragMouse.y),
+        };
+        Object.assign(this.selectionRect.style, {
+            left:(selectionRect.x + this.x) + "px",
+            top:(selectionRect.y + this.y) + "px",
+            width:selectionRect.width + "px",
+            height:selectionRect.height + "px",
+        });
+        const boxes = this.context.boxes.boxes.filter(box => {
+            const inter = boxesIntersection(box.getRect(), selectionRect);
+            return inter.width > 0 && inter.height > 0;
+        });
+        this.context.selection.setBoxes(Array.from(new Set([...boxes, ...this.initialBoxesSelection])));
+    }
+
     onInertia = () => {
         this.velocity.x *= FRICTION;
         this.velocity.y *= FRICTION;
@@ -80,6 +144,9 @@ export default class Stage{
         );
         if(Math.hypot(this.velocity.x, this.velocity.y) > MIN_SPEED){
             this.inertiaRaf = requestAnimationFrame(this.onInertia);
+        }
+        else{
+            this.velocity = undefined;
         }
     }
 
