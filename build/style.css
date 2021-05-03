@@ -143,6 +143,13 @@ html, body {
     display:block;
 }
 
+.linkMenu-delete{
+    position:absolute;
+    pointer-events:all;
+    user-select:none;
+    cursor:pointer;
+}
+
 .arrowMenu{
     position:absolute;
     display:flex;
