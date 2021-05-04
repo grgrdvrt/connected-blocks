@@ -1,6 +1,8 @@
 import {svg} from "./dom";
-/**align**/
 
+//from https://fonts.google.com/icons?selected=Material+Icons
+
+/**align**/
 const alignAttributes = {
     "enable-background":"new 0 0 24 24",
     height:"15px",
@@ -55,6 +57,22 @@ export const rightAlignIcon = () => svg("svg", {
     children:[
         svg("rect", {attributes:{fill:"none", height:"24", width:"24"}}),
         svg("path", {attributes:{d:"M20,2h2v20h-2V2z M2,10h16V7H2V10z M8,17h10v-3H8V17z"}})
+    ]
+});
+
+export const horizontalDistributeIcon = () => svg("svg", {
+    attributes:alignAttributes,
+    children:[
+        svg("rect", {attributes:{fill:"none", height:"24", width:"24"}}),
+        svg("path", {attributes:{d:"M4,22H2V2h2V22z M22,2h-2v20h2V2z M13.5,7h-3v10h3V7z"}})
+    ]
+});
+
+export const verticalDistributeIcon = () => svg("svg", {
+    attributes:alignAttributes,
+    children:[
+        svg("rect", {attributes:{fill:"none", height:"24", width:"24"}}),
+        svg("path", {attributes:{d:"M22,2v2H2V2H22z M7,10.5v3h10v-3H7z M2,20v2h20v-2H2z"}})
     ]
 });
 
