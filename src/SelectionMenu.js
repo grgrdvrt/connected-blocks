@@ -102,7 +102,7 @@ export default class SelectionMenu{
             if(boxRect.x + boxRect.width > xMax) xMax = boxRect.x + boxRect.width;
             if(boxRect.y + boxRect.height > yMax) yMax = boxRect.y + boxRect.height;
         });
-        const margin = 20;
+        const margin = 15;
         this.rect = {
             x:xMin - margin,
             y:yMin - margin,
