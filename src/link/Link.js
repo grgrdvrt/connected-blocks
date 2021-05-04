@@ -19,6 +19,11 @@ export default class Link{
 
     initDom(){
         this.line = svg("path", {attributes:{fill:"none",}});
+        this.shadowLine = svg("path", {attributes:{
+            fill:"none",
+            stroke:"transparent",
+            "stroke-width":10
+        }});
         this.headOrigin = new LinkHead(this);
         this.headTarget = new LinkHead(this);
         const types = Object.values(headTypes);
@@ -30,6 +35,7 @@ export default class Link{
                 "stroke-width":"2",
             },
             children:[
+                this.shadowLine,
                 this.line,
                 this.headOrigin.dom,
                 this.headTarget.dom,
@@ -105,8 +111,10 @@ export default class Link{
             ].join(" ");
 
             this.line.setAttributeNS(null, "d", d);
+            this.shadowLine.setAttributeNS(null, "d", d);
         }
         else{
+            this.shadowLine.setAttributeNS(null, "d", "");
             this.line.setAttributeNS(null, "d", "");
         }
     }
