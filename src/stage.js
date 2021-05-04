@@ -58,12 +58,20 @@ export default class Stage{
         for(let i = 0; i < nFiles; i++){
             const reader = new FileReader();
             reader.onload = loadEvent => {
-                const box = this.context.boxes.createBox(
-                    e.pageX - this.x,
-                    e.pageY - this.y,
-                    `<img src="${loadEvent.target.result}">`
-                );
-                this.context.boxes.addBox(box);
+                const img = new Image();
+                img.addEventListener("load", () => {
+                    const box = this.context.boxes.createBox(
+                        e.pageX - this.x,
+                        e.pageY - this.y,
+                        `<img class="importedImage" src="${loadEvent.target.result}">`
+                    );
+                    this.context.boxes.addBox(box);
+                    Object.assign(box.content.dom.style, {
+                        width:img.naturalWidth,
+                        height:img.naturalHeight,
+                    });
+                });
+                img.src = loadEvent.target.result;
             };
             reader.readAsDataURL(items[i].getAsFile());
         }

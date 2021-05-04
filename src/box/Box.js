@@ -144,7 +144,6 @@ export default class Box {
         this.dom.style.top = this.y + "px";
     }
 
-
     updateRelatedLinks(){
         this.context.links.getRelatedLinks(this)
             .forEach(link => link.update());
