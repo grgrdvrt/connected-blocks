@@ -170,7 +170,7 @@ export default class Box {
         return {
             x:this.x,
             y:this.y,
-            content:this.inputContent
+            content:this.content.value
         };
     }
 }
