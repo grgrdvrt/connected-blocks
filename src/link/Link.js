@@ -112,12 +112,14 @@ export default class Link{
     }
 
     setMemento(memento){
+        this.headOrigin.setType(headTypes[memento.origin.type]);
+        this.headTarget.setType(headTypes[memento.target.type]);
     }
 
     getMemento(){
         return {
-            origin:this.origin.id,
-            target:this.target.id,
+            origin:{id:this.origin.id, type:this.headOrigin.type.name},
+            target:{id:this.target.id, type:this.headTarget.type.name},
         };
     }
 }

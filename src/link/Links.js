@@ -131,9 +131,10 @@ export default class Links{
     setMemento(memento){
         memento.forEach(linkMemento => {
             const link = this.createLink(
-                this.context.boxes.getBoxById(linkMemento.origin),
-                this.context.boxes.getBoxById(linkMemento.target),
+                this.context.boxes.getBoxById(linkMemento.origin.id),
+                this.context.boxes.getBoxById(linkMemento.target.id),
             );
+            link.setMemento(linkMemento);
             this.addLink(link);
         });
     }

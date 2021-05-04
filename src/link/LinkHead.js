@@ -1,23 +1,43 @@
 import {svg} from "../utils/dom";
 
 function makeNoneHead(){
-    return {d:"", size:0, fill:"none"};
+    return {name:"none", d:"", size:0, fill:"none"};
 }
 function makeTriangleHead(){
     const s = 8;
-    return {d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`, size:s, fill:"#ffffff"};
+    return {
+        name:"trianle",
+        d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`,
+        size:s,
+        fill:"#ffffff"
+    };
 }
 function makeArrowHead(){
     const s = 8;
-    return {d:`M -${s} -${s} L 0 0 l -${s} ${s}`, size:0, fill:"none"};
+    return {
+        name:"arrow",
+        d:`M -${s} -${s} L 0 0 l -${s} ${s}`,
+        size:0,
+        fill:"none"
+    };
 }
 function makeHollowDiamondHead(){
     const s = 8;
-    return {d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`, size:2 * s, fill:"#ffffff"};
+    return {
+        name:"hollowDiamond",
+        d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`,
+        size:2 * s,
+        fill:"#ffffff"
+    };
 }
 function makeSolidDiamondHead(){
     const s = 8;
-    return {d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`, size:2 * s, fill:"#777777"};
+    return {
+        name:"solidDiamond",
+        d:`M 0 0 l -${s} -${0.7 *s} -${s} ${0.7 * s} ${s} ${0.7 * s} ${s} -${0.7 * s}`,
+        size:2 * s,
+        fill:"#777777"
+    };
 }
 
 
@@ -47,6 +67,10 @@ export default class LinkHead{
 
     getSize(){
         return this.type.size;
+    }
+
+    getTypeId(){
+        return Object.values(headTypes).indexOf(this.type);
     }
 
     update(x, y, rotation, normal){
