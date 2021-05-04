@@ -31,7 +31,7 @@ class Main {
         window.addEventListener("resize", this.onResize);
         this.onResize();
 
-        // this.initDebug();
+        this.initDebug();
     }
 
     initDebug(){

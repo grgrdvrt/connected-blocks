@@ -34,6 +34,40 @@ export default class Stage{
         this.background.addEventListener("dblclick", this.onDoubleClick);
         this.background.addEventListener("click", this.onClick);
         this.background.addEventListener("mousedown", this.onMouseDown);
+
+        this.background.addEventListener("dragover", this.onDragOver);
+        this.background.addEventListener("dragleave", this.onDragLeave);
+        this.background.addEventListener("drop", this.onDrop);
+    }
+
+    onDragOver = e => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.background.style.backgroundColor = "#cccccc";
+    }
+
+    onDragLeave = e => {
+        this.background.style.backgroundColor = "white";
+    }
+
+    onDrop = e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const items = e.dataTransfer.items;
+        const nFiles = items.length;
+        for(let i = 0; i < nFiles; i++){
+            const reader = new FileReader();
+            reader.onload = loadEvent => {
+                const box = this.context.boxes.createBox(
+                    e.pageX - this.x,
+                    e.pageY - this.y,
+                    `<img src="${loadEvent.target.result}">`
+                );
+                this.context.boxes.addBox(box);
+            };
+            reader.readAsDataURL(items[i].getAsFile());
+        }
+        this.background.style.backgroundColor = "white";
     }
 
     onDoubleClick = e => {
