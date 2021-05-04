@@ -1,4 +1,5 @@
 import {dom} from "./utils/dom";
+import {saveIcon, addFileIcon} from "./utils/icons";
 export default class ExportMenu{
     constructor(context){
         this.context = context;
@@ -9,13 +10,13 @@ export default class ExportMenu{
         this.saveButton = dom({
             type:"button",
             classes:"exportMenu-button",
-            innerHTML:"save",
+            children:[saveIcon()],
         });
         this.label = dom({
             type:"label",
             classes:"exportMenu-button",
             attributes:{for:"openFile"},
-            innerHTML:"open"
+            children:[addFileIcon()]
         });
         this.fileInput = dom({
             type:"input",

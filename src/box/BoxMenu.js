@@ -1,4 +1,5 @@
 import {dom} from "../utils/dom";
+import {linkIcon, deleteIcon} from "../utils/icons";
 
 export default class BoxMenu{
     constructor(context, box){
@@ -10,12 +11,12 @@ export default class BoxMenu{
     initDom(){
         this.lineBtn = dom({
             type:"button",
-            innerHTML:"L",
+            children:[linkIcon()],
             classes:"box-menu-lineBtn",
         });
         this.deleteBtn = dom({
             type:"button",
-            innerHTML:"X",
+            children:[deleteIcon()],
             classes:"box-menu-deleteBtn",
         });
         this.dom = dom({

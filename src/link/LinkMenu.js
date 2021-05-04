@@ -1,6 +1,7 @@
 import {dom} from "../utils/dom";
 import ArrowMenu from "./ArrowMenu";
 import {cubic, lerp} from "../utils/maths";
+import {deleteIcon} from "../utils/icons";
 
 export default class LinkMenu{
     constructor(context){
@@ -11,7 +12,7 @@ export default class LinkMenu{
     initDom(){
         this.originMenu = new ArrowMenu(this.context, type => this.context.links.lastOriginType = type);
         this.targetMenu = new ArrowMenu(this.context, type => this.context.links.lastTargetType = type);
-        this.deleteButton = dom({type:"button", classes:"linkMenu-delete", innerHTML:"X"});
+        this.deleteButton = dom({type:"button", classes:"linkMenu-delete", children:[deleteIcon()]});
         this.dom = dom({
             classes:"linkMenu",
             children:[

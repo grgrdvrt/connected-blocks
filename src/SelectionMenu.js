@@ -1,4 +1,12 @@
 import {dom} from "./utils/dom";
+import {
+    leftAlignIcon,
+    rightAlignIcon,
+    topAlignIcon,
+    bottomAlignIcon,
+    verticalAlignIcon,
+    horizontalAlignIcon,
+} from "./utils/icons";
 
 export default class SelectionMenu{
     constructor(context){
@@ -8,9 +16,9 @@ export default class SelectionMenu{
     }
 
     initDom(){
-        const leftAlignBtn = dom({type:"button", innerHTML:"<"});
-        const verticalAlignBtn = dom({type:"button", innerHTML:"|"});
-        const rightAlignBtn = dom({type:"button", innerHTML:">"});
+        const leftAlignBtn = dom({type:"button", children:[leftAlignIcon()]});
+        const verticalAlignBtn = dom({type:"button", children:[verticalAlignIcon()]});
+        const rightAlignBtn = dom({type:"button", children:[rightAlignIcon()]});
         this.topContainer = dom({
             classes:"selectionMenu-top",
             children:[
@@ -19,9 +27,9 @@ export default class SelectionMenu{
                 rightAlignBtn,
             ]
         });
-        const topAlignBtn = dom({type:"button", innerHTML:"^"});
-        const horizontalAlignBtn = dom({type:"button", innerHTML:"-"});
-        const bottomAlignBtn = dom({type:"button", innerHTML:"v"});
+        const topAlignBtn = dom({type:"button", children:[topAlignIcon()]});
+        const horizontalAlignBtn = dom({type:"button", children:[horizontalAlignIcon()]});
+        const bottomAlignBtn = dom({type:"button", children:[bottomAlignIcon()]});
         this.leftContainer = dom({
             classes:"selectionMenu-left",
             children:[
@@ -54,9 +62,11 @@ export default class SelectionMenu{
                 this.show();
             }
             this.update();
+            this.context.boxes.dom.classList.add("multipleSelection");
         }
         else if(!this.isHidden){
             this.hide();
+            this.context.boxes.dom.classList.remove("multipleSelection");
         }
     }
 
@@ -92,7 +102,13 @@ export default class SelectionMenu{
             if(boxRect.x + boxRect.width > xMax) xMax = boxRect.x + boxRect.width;
             if(boxRect.y + boxRect.height > yMax) yMax = boxRect.y + boxRect.height;
         });
-        this.rect = {x:xMin, y:yMin, width:xMax - xMin, height:yMax - yMin};
+        const margin = 20;
+        this.rect = {
+            x:xMin - margin,
+            y:yMin - margin,
+            width:xMax - xMin + 2 * margin,
+            height:yMax - yMin + 2 * margin
+        };
         Object.assign(this.dom.style, {
             top:this.rect.y + "px",
             left:this.rect.x + "px",

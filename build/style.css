@@ -86,8 +86,23 @@ html, body {
     display:block;
 }
 
+.boxes.multipleSelection .box.selected .box-menu{
+    display:none;
+}
+
 .box-menu button{
+    border-radius:15px;
+    margin:0 5px 5px -2px;
+    cursor:pointer;
+    width:30px;
+    height:30px;
+    background-color:#f5f5f5;
+    border:solid 2px transparent;
     user-select:none;
+}
+
+.box-menu button:hover{
+    border:solid 2px #cccccc;
 }
 
 .box-content{
@@ -189,7 +204,6 @@ html, body {
 
 .selectionMenu{
     position:absolute;
-    border:solid 1px #f5f5f5;
     pointer-events:none;
 }
 
@@ -207,8 +221,12 @@ html, body {
     user-select:none;
 }
 
-.selectionMenu-button:hover{
+.selectionMenu button:hover{
     border:solid 2px #cccccc;
+}
+
+.selectionMenu button > *{
+    pointer-events:none;
 }
 
 .selectionMenu-top{
