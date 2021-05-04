@@ -6,7 +6,7 @@ function makeNoneHead(){
 function makeTriangleHead(){
     const s = 8;
     return {
-        name:"trianle",
+        name:"triangle",
         d:`M 0 0 l -${s} -${s} v ${2 * s} l ${s} -${s}`,
         size:s,
         fill:"#ffffff"
