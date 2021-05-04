@@ -4,6 +4,7 @@ import Links from "./link/Links";
 import LinkMenu from "./link/LinkMenu";
 import Selection from "./selection";
 import SelectionMenu from "./SelectionMenu";
+import ExportMenu from "./ExportMenu";
 import UndoStack from "./undoStack";
 
 class Main {
@@ -26,12 +27,16 @@ class Main {
         this.selectionMenu = new SelectionMenu(this);
         this.stage.pannableDom.appendChild(this.selectionMenu.dom);
 
+        this.exportMenu = new ExportMenu(this);
+        this.exportMenu.enable();
+        this.dom.appendChild(this.exportMenu.dom);
+
         this.selection = new Selection(this);
 
         window.addEventListener("resize", this.onResize);
         this.onResize();
 
-        this.initDebug();
+        // this.initDebug();
     }
 
     initDebug(){
