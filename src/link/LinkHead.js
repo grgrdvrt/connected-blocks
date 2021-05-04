@@ -49,10 +49,11 @@ export default class LinkHead{
         return this.type.size;
     }
 
-    update(x, y, rotation){
-        this.x = x;
-        this.y = y;
+    update(x, y, rotation, normal){
+        this.x = x + normal.x;
+        this.y = y + normal.y;
         this.rotation = rotation;
+        this.normal = normal;
         this.dom.setAttributeNS(null, "transform", `translate(${x}, ${y}) rotate(${rotation})`);
     }
 }

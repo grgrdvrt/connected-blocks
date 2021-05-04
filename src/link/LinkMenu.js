@@ -27,12 +27,23 @@ export default class LinkMenu{
         this.link = link;
         this.originMenu.setLinkHead(this.link.headOrigin);
         this.targetMenu.setLinkHead(this.link.headTarget);
-        const {x:ox, y:oy} = this.link.headOrigin;
-        const {x:tx, y:ty} = this.link.headTarget;
-        console.log(ox, oy, tx, ty);
+        const {x:ox, y:oy, normal:on} = this.link.headOrigin;
+        const {x:tx, y:ty, normal:tn} = this.link.headTarget;
         Object.assign(this.deleteButton.style, {
-            left:cubic(ox, lerp(ox, tx, 0.3), lerp(tx, ox, 0.3), tx, 0.5) + "px",
-            top:cubic(oy, lerp(oy, ty, 0.3), lerp(ty, oy, 0.3), ty, 0.5) + "px",
+            left:cubic(
+                ox,
+                lerp(ox, tx, 0.3 * Math.abs(on.x)),
+                lerp(tx, ox, 0.3 * Math.abs(tn.x)),
+                tx,
+                0.5
+            ) + "px",
+            top:cubic(
+                oy,
+                lerp(oy, ty, 0.3 * Math.abs(on.y)),
+                lerp(ty, oy, 0.3 * Math.abs(tn.y)),
+                ty,
+                0.5
+            ) + "px",
         });
         this.originMenu.enable();
         this.targetMenu.enable();

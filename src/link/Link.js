@@ -93,8 +93,8 @@ export default class Link{
                 y:lerp(i2.y, i1.y, Math.abs(n2.y) * 0.3),
             };
 
-            this.headOrigin.update(i1.x + n1.x, i1.y + n1.y, r1);
-            this.headTarget.update(i2.x + n2.x, i2.y + n2.y, r2);
+            this.headOrigin.update(i1.x, i1.y, r1, n1);
+            this.headTarget.update(i2.x, i2.y, r2, n2);
             const size1 = this.headOrigin.getSize();
             const size2 = this.headTarget.getSize();
             const d = [
