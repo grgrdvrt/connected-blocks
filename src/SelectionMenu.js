@@ -102,16 +102,34 @@ export default class SelectionMenu{
     }
 
     alignBoxes(ratios){
-        const boxes = this.context.selection.boxes;
-        const {x:rx, y:ry, width:rw, height:rh} = this.rect;
-        boxes.forEach(box => {
-            const {x:bx, y:by, width:bw, height:bh} = box.getRect();
-            box.setPosition(
-                ratios.rect[0] * rx + ratios.rect[2] * rw + ratios.box[0] * bx + ratios.box[2] * bw,
-                ratios.rect[1] * ry + ratios.rect[3] * rh + ratios.box[1] * by + ratios.box[3] * bh
-            );
+        const boxes = this.context.selection.boxes.concat();
+        const oldPositions = boxes.map(box => {
+            const {x, y} = box.getRect();
+            return {x, y};
         });
-        // this.update();
-        this.context.links.update();
+        const {x:rx, y:ry, width:rw, height:rh} = this.rect;
+        const newPositions = boxes.map(box => {
+            const {x:bx, y:by, width:bw, height:bh} = box.getRect();
+            return {
+                x:ratios.rect[0] * rx + ratios.rect[2] * rw + ratios.box[0] * bx + ratios.box[2] * bw,
+                y:ratios.rect[1] * ry + ratios.rect[3] * rh + ratios.box[1] * by + ratios.box[3] * bh
+            };
+        });
+        const setPositions = positions => {
+            boxes.forEach((box, i) => {
+                const pos = positions[i];
+                box.setPosition(pos.x, pos.y);
+            });
+            this.context.links.update();
+        };
+        this.context.undoStack.addAction({
+            undo:() => {
+                setPositions(oldPositions);
+            },
+            redo:() => {
+                setPositions(newPositions);
+            }
+        });
+        setPositions(newPositions);
     }
 }
