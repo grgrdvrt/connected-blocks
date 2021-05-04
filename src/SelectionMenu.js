@@ -6,6 +6,9 @@ import {
     bottomAlignIcon,
     verticalAlignIcon,
     horizontalAlignIcon,
+
+    verticalDistributeIcon,
+    horizontalDistributeIcon,
 } from "./utils/icons";
 
 export default class SelectionMenu{
@@ -19,7 +22,7 @@ export default class SelectionMenu{
         const leftAlignBtn = dom({type:"button", children:[leftAlignIcon()]});
         const verticalAlignBtn = dom({type:"button", children:[verticalAlignIcon()]});
         const rightAlignBtn = dom({type:"button", children:[rightAlignIcon()]});
-        this.topContainer = dom({
+        const topContainer = dom({
             classes:"selectionMenu-top",
             children:[
                 leftAlignBtn,
@@ -30,7 +33,7 @@ export default class SelectionMenu{
         const topAlignBtn = dom({type:"button", children:[topAlignIcon()]});
         const horizontalAlignBtn = dom({type:"button", children:[horizontalAlignIcon()]});
         const bottomAlignBtn = dom({type:"button", children:[bottomAlignIcon()]});
-        this.leftContainer = dom({
+        const leftContainer = dom({
             classes:"selectionMenu-left",
             children:[
                 topAlignBtn,
@@ -38,11 +41,25 @@ export default class SelectionMenu{
                 bottomAlignBtn,
             ]
         });
+
+        const horizontalDistributeBtn = dom({
+            type:"button",
+            classes:"selectionMenu-horizontalDistributeBtn",
+            children:[horizontalDistributeIcon()]
+        });
+        const verticalDistributeBtn = dom({
+            type:"button",
+            classes:"selectionMenu-verticalDistributeBtn",
+            children:[verticalDistributeIcon()]
+        });
+
         this.dom = dom({
             classes:"selectionMenu hidden",
             children:[
-                this.topContainer,
-                this.leftContainer,
+                topContainer,
+                leftContainer,
+                horizontalDistributeBtn,
+                verticalDistributeBtn,
             ]
         });
 
@@ -54,6 +71,10 @@ export default class SelectionMenu{
         this.alignMap.set(topAlignBtn, {rect:[0, 1, 0, 0], box:[1, 0, 0, 0]});
         this.alignMap.set(horizontalAlignBtn, {rect:[0, 1, 0, 0.5], box:[1, 0, 0, -0.5]});
         this.alignMap.set(bottomAlignBtn, {rect:[0, 1, 0, 1], box:[1, 0, 0, -1]});
+
+        this.distributionMap = new Map();
+        this.distributionMap.set(horizontalDistributeBtn, {x:1, y:0});
+        this.distributionMap.set(verticalDistributeBtn, {x:0, y:1});
     }
 
     updateVisibility(){
@@ -72,21 +93,24 @@ export default class SelectionMenu{
 
     show(){
         this.isHidden = false;
-        this.topContainer.addEventListener("click", this.onClick);
-        this.leftContainer.addEventListener("click", this.onClick);
+        this.dom.addEventListener("click", this.onClick);
         this.dom.classList.remove("hidden");
         this.update();
     }
 
     hide(){
         this.isHidden = true;
-        this.topContainer.removeEventListener("click", this.onClick);
-        this.leftContainer.removeEventListener("click", this.onClick);
+        this.dom.removeEventListener("click", this.onClick);
         this.dom.classList.add("hidden");
     }
 
     onClick = e => {
-        this.alignBoxes(this.alignMap.get(e.target));
+        if(this.alignMap.has(e.target)){
+            this.alignBoxes(this.alignMap.get(e.target));
+        }
+        else if(this.distributionMap.has(e.target)){
+            this.distributeBoxes(this.distributionMap.get(e.target));
+        }
     }
 
     update(){
@@ -102,27 +126,23 @@ export default class SelectionMenu{
             if(boxRect.x + boxRect.width > xMax) xMax = boxRect.x + boxRect.width;
             if(boxRect.y + boxRect.height > yMax) yMax = boxRect.y + boxRect.height;
         });
-        const margin = 15;
         this.rect = {
-            x:xMin - margin,
-            y:yMin - margin,
-            width:xMax - xMin + 2 * margin,
-            height:yMax - yMin + 2 * margin
+            x:xMin,
+            y:yMin,
+            width:xMax - xMin,
+            height:yMax - yMin
         };
+        const margin = 15;
         Object.assign(this.dom.style, {
-            top:this.rect.y + "px",
-            left:this.rect.x + "px",
-            width:this.rect.width + "px",
-            height:this.rect.height + "px",
+            top:this.rect.y - margin + "px",
+            left:this.rect.x - margin + "px",
+            width:this.rect.width + 2 * margin + "px",
+            height:this.rect.height + 2 * margin + "px",
         });
     }
 
     alignBoxes(ratios){
         const boxes = this.context.selection.boxes.concat();
-        const oldPositions = boxes.map(box => {
-            const {x, y} = box.getRect();
-            return {x, y};
-        });
         const {x:rx, y:ry, width:rw, height:rh} = this.rect;
         const newPositions = boxes.map(box => {
             const {x:bx, y:by, width:bw, height:bh} = box.getRect();
@@ -130,6 +150,44 @@ export default class SelectionMenu{
                 x:ratios.rect[0] * rx + ratios.rect[2] * rw + ratios.box[0] * bx + ratios.box[2] * bw,
                 y:ratios.rect[1] * ry + ratios.rect[3] * rh + ratios.box[1] * by + ratios.box[3] * bh
             };
+        });
+        this.setBoxesPositions(boxes, newPositions);
+    }
+
+    distributeBoxes(ratios){
+        const boxes = this.context.selection.boxes.concat().sort((a, b) => {
+            return (a.x - b.x) * ratios.x + (a.y - b.y) * ratios.y;
+        });
+        const {x:rx, y:ry, width:rw, height:rh} = this.rect;
+        const boxRects = boxes.map(box => box.getRect());
+        const sum = boxRects.reduce((sum, rect) => {
+            sum.width += rect.width;
+            sum.height += rect.height;
+            return sum;
+        }, {width:0, height:0});
+        const space = {
+            x:(rw - sum.width) / (boxes.length - 1),
+            y:(rh - sum.height) / (boxes.length - 1),
+        };
+        let x = rx;
+        let y = ry;
+        const newPositions = boxes.map((box, i) => {
+            const rect = boxRects[i];
+            const pos = {
+                x:x * ratios.x + rect.x * ratios.y,
+                y:y * ratios.y + rect.y * ratios.x,
+            };
+            x += (space.x + rect.width);
+            y += (space.y + rect.height);
+            return pos;
+        });
+        this.setBoxesPositions(boxes, newPositions);
+    }
+
+    setBoxesPositions(boxes, newPositions){
+        const oldPositions = boxes.map(box => {
+            const {x, y} = box.getRect();
+            return {x, y};
         });
         const setPositions = positions => {
             boxes.forEach((box, i) => {

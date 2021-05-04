@@ -257,6 +257,20 @@ html, body {
     right:100%;
 }
 
+.selectionMenu-verticalDistributeBtn{
+    position:absolute;
+    left:100%;
+    top:50%;
+    transform:translate(0%, -50%);
+}
+
+.selectionMenu-horizontalDistributeBtn{
+    position:absolute;
+    top:100%;
+    left:50%;
+    transform:translate(-50%, 0%);
+}
+
 .exportMenu{
     position:absolute;
     top:0px;
