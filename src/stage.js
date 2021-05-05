@@ -122,7 +122,10 @@ export default class Stage{
         document.body.removeEventListener("mousemove", this.onPan);
         document.body.removeEventListener("mouseup", this.onStopPan);
         this.hasPanned = Boolean(this.velocity);
-        if(this.velocity){
+        if(!this.hasPanned){
+            this.hasSelected = false;
+        }
+        if(this.hasPanned){
             this.onInertia();
         }
     }
