@@ -8,6 +8,7 @@ export default class Links{
         this.links = [];
         this.lastOriginType = headTypes.none;
         this.lastTargetType = headTypes.arrow;
+        this.lastDash = false;
         this.initDom();
         this.x = 0;
         this.y = 0;
@@ -79,6 +80,7 @@ export default class Links{
         const newLink = new Link(this.context, origin, target);
         newLink.headOrigin.setType(this.lastOriginType);
         newLink.headTarget.setType(this.lastTargetType);
+        newLink.setDashed(this.lastDash);
         return newLink;
     }
 

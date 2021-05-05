@@ -1,4 +1,4 @@
-import {dom} from "../utils/dom";
+import {dom, svg} from "../utils/dom";
 import ArrowMenu from "./ArrowMenu";
 import {cubic, lerp} from "../utils/maths";
 import {deleteIcon} from "../utils/icons";
@@ -12,13 +12,35 @@ export default class LinkMenu{
     initDom(){
         this.originMenu = new ArrowMenu(this.context, type => this.context.links.lastOriginType = type);
         this.targetMenu = new ArrowMenu(this.context, type => this.context.links.lastTargetType = type);
-        this.deleteButton = dom({type:"button", classes:"linkMenu-delete", children:[deleteIcon()]});
+        this.dashIcon = svg("line", {
+            attributes:{
+                stroke:"#555555",
+                "stroke-width":"2",
+                x1:"0%", y1:"50%", x2:"100%", y2:"50%",
+            }
+        });
+        this.dashButton = dom({type:"button", children:[svg("svg", {
+            attributes:{
+                width:"15px",
+                height:"15px",
+                viewbox:"0 0 24 24"
+            },
+            children:[this.dashIcon]
+        })]});
+        this.deleteButton = dom({type:"button", children:[deleteIcon()]});
+        this.centerMenu = dom({
+            classes:["linkMenu-centerMenu"],
+            children:[
+                this.deleteButton,
+                this.dashButton,
+            ]
+        });
         this.dom = dom({
             classes:"linkMenu",
             children:[
                 this.originMenu.dom,
                 this.targetMenu.dom,
-                this.deleteButton,
+                this.centerMenu,
             ]
         });
     }
@@ -30,7 +52,7 @@ export default class LinkMenu{
         this.targetMenu.setLinkHead(this.link.headTarget);
         const {x:ox, y:oy, normal:on} = this.link.headOrigin;
         const {x:tx, y:ty, normal:tn} = this.link.headTarget;
-        Object.assign(this.deleteButton.style, {
+        Object.assign(this.centerMenu.style, {
             left:cubic(
                 ox,
                 lerp(ox, tx, 0.3 * Math.abs(on.x)),
@@ -46,9 +68,17 @@ export default class LinkMenu{
                 0.5
             ) + "px",
         });
+        this.updateDashButton();
         this.originMenu.enable();
         this.targetMenu.enable();
         this.deleteButton.addEventListener("click", this.onDeleteClicked);
+        this.dashButton.addEventListener("click", this.onDashClicked);
+    }
+
+    updateDashButton(){
+        if(this.link){
+            this.dashIcon.setAttributeNS(null, "stroke-dasharray", this.link.isDashed ? "" : "3");
+        }
     }
 
     close(){
@@ -56,6 +86,7 @@ export default class LinkMenu{
         this.originMenu.disable();
         this.targetMenu.disable();
         this.deleteButton.removeEventListener("click", this.onDeleteClicked);
+        this.dashButton.removeEventListener("click", this.onDashClicked);
     }
 
     onDeleteClicked = () => {
@@ -73,5 +104,23 @@ export default class LinkMenu{
         });
         exec();
         this.context.selection.removeLink(link);
+    }
+
+    onDashClicked = () => {
+        const link = this.link;
+        const oldDash = this.link.isDashed;
+        const exec = () => {
+            link.setDashed(!oldDash);
+        };
+        this.context.undoStack.addAction({
+            undo:() => {
+                link.setDashed(oldDash);
+            },
+            redo:() => {
+                exec();
+            }
+        });
+        exec();
+        this.context.links.lastDash = !oldDash;
     }
 }

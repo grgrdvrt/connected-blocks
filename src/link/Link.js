@@ -13,12 +13,15 @@ export default class Link{
         this.target = target;
 
         this.isSelected = false;
+        this.isDashed = false;
 
         this.initDom();
     }
 
     initDom(){
-        this.line = svg("path", {attributes:{fill:"none",}});
+        this.line = svg("path", {attributes:{
+            fill:"none",
+        }});
         this.shadowLine = svg("path", {attributes:{
             fill:"none",
             stroke:"transparent",
@@ -72,6 +75,12 @@ export default class Link{
         this.context.linkMenu.close();
     }
 
+    setDashed(isDashed){
+        this.isDashed = isDashed;
+        this.line.setAttributeNS(null, "stroke-dasharray", this.isDashed ? "4" : "");
+        this.context.linkMenu.updateDashButton();
+    }
+
     update(){
         const r1 = this.origin.getRect();
         const r2 = this.target.getRect();
@@ -122,12 +131,14 @@ export default class Link{
     setMemento(memento){
         this.headOrigin.setType(headTypes[memento.origin.type]);
         this.headTarget.setType(headTypes[memento.target.type]);
+        this.setDashed(memento.isDashed);
     }
 
     getMemento(){
         return {
             origin:{id:this.origin.id, type:this.headOrigin.type.name},
             target:{id:this.target.id, type:this.headTarget.type.name},
+            isDashed:this.isDashed,
         };
     }
 }
