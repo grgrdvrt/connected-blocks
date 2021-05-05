@@ -7,6 +7,31 @@ html, body {
     overflow:hidden;
 }
 
+.exportMenu-button,
+button{
+    font-family:system-ui;
+    border-radius:15px;
+    padding:5px;
+    cursor:pointer;
+    background-color:#f5f5f5;
+    border:solid 2px transparent;
+    user-select:none;
+
+    width:30px;
+    height:30px;
+}
+
+.exportMenu-button > *,
+button > *{
+    pointer-events:none;
+}
+
+.exportMenu-button:hover,
+button:hover{
+    border:solid 2px #cccccc;
+}
+
+
 
 .stage{
     position:relative;
@@ -91,19 +116,9 @@ html, body {
 }
 
 .box-menu button{
-    border-radius:15px;
     margin:0 5px 5px -2px;
-    cursor:pointer;
-    width:30px;
-    height:30px;
-    background-color:#f5f5f5;
-    border:solid 2px transparent;
-    user-select:none;
 }
 
-.box-menu button:hover{
-    border:solid 2px #cccccc;
-}
 
 .box-content{
     overflow:auto;
@@ -194,22 +209,8 @@ html, body {
     flex-direction:column;
 }
 
-.arrowMenu-button{
-    border-radius:15px;
-    cursor:pointer;
-    width:30px;
-    height:30px;
-    background-color:#f5f5f5;
-    border:solid 2px transparent;
+.arrowMenu button{
     pointer-events:all;
-}
-
-.arrowMenu-button > *{
-    pointer-events:none;
-}
-
-.arrowMenu-button:hover{
-    border:solid 2px #cccccc;
 }
 
 .selectionMenu{
@@ -222,22 +223,7 @@ html, body {
 }
 
 .selectionMenu button{
-    border-radius:15px;
-    cursor:pointer;
-    width:30px;
-    height:30px;
-    background-color:#f5f5f5;
-    border:solid 2px transparent;
-    user-select:none;
     pointer-events:all;
-}
-
-.selectionMenu button:hover{
-    border:solid 2px #cccccc;
-}
-
-.selectionMenu button > *{
-    pointer-events:none;
 }
 
 .selectionMenu-top{
@@ -282,16 +268,8 @@ html, body {
 }
 
 .exportMenu-button{
-    font-family:system-ui;
     border-radius:5px;
     padding:5px;
-    cursor:pointer;
-    background-color:#f5f5f5;
-    border:solid 2px transparent;
-    user-select:none;
-}
-.exportMenu-button:hover{
-    border:solid 2px #cccccc;
 }
 
 .importedImage{

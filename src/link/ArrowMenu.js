@@ -12,7 +12,6 @@ export default class ArrowMenu{
         this.buttons = Object.values(headTypes).map((headType, i) => {
             const button = dom({
                 type:"button",
-                classes:"arrowMenu-button",
                 attributes:{
                     "data-id":i
                 },
