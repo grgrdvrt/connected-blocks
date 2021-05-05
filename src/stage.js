@@ -92,13 +92,10 @@ export default class Stage{
         if(!this.hasSelected && !this.hasPanned){
             this.context.selection.clear();
         }
-        this.hasSelected = false;
-        this.hasPanned = false;
     }
 
     onMouseDown = e => {
         e.preventDefault();
-        e.stopPropagation();
         if(e.button === 2){
             this.onStartPan(e);
         }
@@ -116,9 +113,9 @@ export default class Stage{
             x:this.x,
             y:this.y,
         };
+        this.hasPanned = false;
         document.body.addEventListener("mousemove", this.onPan);
         document.body.addEventListener("mouseup", this.onStopPan);
-        this.hasPanned = true;
     }
 
     onStopPan = e => {
@@ -131,6 +128,7 @@ export default class Stage{
     }
 
     onPan = e => {
+        this.hasPanned = true;
         const delta = {
             x:e.pageX - this.initialDragMouse.x,
             y:e.pageY - this.initialDragMouse.y,
@@ -160,13 +158,17 @@ export default class Stage{
             width:"0px",
             height:"0px",
         });
+        this.hasSelected = false;
     }
 
     onStopSelect = e => {
         document.body.removeEventListener("mousemove", this.onSelect);
         document.body.removeEventListener("mouseup", this.onStopSelect);
         this.dom.removeChild(this.selectionRect);
-        this.hasSelected = this.initialBoxesSelection.length !== this.context.selection.boxes.length;
+        const nBoxesInit = this.initialBoxesSelection.length;
+        this.hasSelected =
+            (e.shiftKey && nBoxesInit !== this.context.selection.boxes.length)
+            || nBoxesInit !== 0;
     }
 
     onSelect = e => {
@@ -187,6 +189,7 @@ export default class Stage{
             return inter.width > 0 && inter.height > 0;
         });
         this.context.selection.setBoxes(Array.from(new Set([...boxes, ...this.initialBoxesSelection])));
+        this.hasSelected = true;
     }
 
     onInertia = () => {
