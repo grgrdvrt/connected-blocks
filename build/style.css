@@ -8,6 +8,7 @@ html, body {
 }
 
 .exportMenu-button,
+.colorSelector,
 button{
     font-family:system-ui;
     border-radius:15px;
@@ -21,17 +22,20 @@ button{
     height:30px;
 }
 
+.colorSelector{
+    padding:2px;
+}
+
 .exportMenu-button > *,
 button > *{
     pointer-events:none;
 }
 
 .exportMenu-button:hover,
+.colorSelector:hover,
 button:hover{
     border:solid 2px #cccccc;
 }
-
-
 
 .stage{
     position:relative;
@@ -189,10 +193,11 @@ button:hover{
 .linkMenu-centerMenu{
     position:absolute;
     transform:translate(-50%, -50%);
-}
-
-.linkMenu button{
     pointer-events:all;
+    display:flex;
+}
+.linkMenu-centerMenu > *{
+    margin:2px;
 }
 
 .arrowMenu{

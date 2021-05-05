@@ -15,6 +15,8 @@ export default class Link{
         this.isSelected = false;
         this.isDashed = false;
 
+        this.color = "#777777";
+
         this.initDom();
     }
 
@@ -33,8 +35,8 @@ export default class Link{
         this.dom = svg("g", {
             classes:"link",
             attributes:{
-                fill:"#ffffff",
-                stroke:"#777777",
+                fill:this.color,
+                stroke:this.color,
                 "stroke-width":"2",
             },
             children:[
@@ -79,6 +81,14 @@ export default class Link{
         this.isDashed = isDashed;
         this.line.setAttributeNS(null, "stroke-dasharray", this.isDashed ? "4" : "");
         this.context.linkMenu.updateDashButton();
+    }
+
+    setColor(color = "#000000"){
+        this.color = color;
+        this.dom.setAttributeNS(null, "stroke", this.color);
+        this.dom.setAttributeNS(null, "fill", this.color);
+        this.headOrigin.setColor(this.color);
+        this.headTarget.setColor(this.color);
     }
 
     update(){

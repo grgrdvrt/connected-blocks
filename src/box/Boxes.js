@@ -7,6 +7,7 @@ export default class Boxes{
         this.context = context;
         this.boxes = [];
         this.initDom();
+        this.lastColor = "#000000";
     }
 
     initDom(){
@@ -39,6 +40,7 @@ export default class Boxes{
         if(defaultContent){
             box.setContent(defaultContent);
         }
+        box.setColor(this.lastColor);
         return box;
     }
 

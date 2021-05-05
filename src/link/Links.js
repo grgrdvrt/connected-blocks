@@ -9,6 +9,7 @@ export default class Links{
         this.lastOriginType = headTypes.none;
         this.lastTargetType = headTypes.arrow;
         this.lastDash = false;
+        this.lastColor = "#777777";
         this.initDom();
         this.x = 0;
         this.y = 0;
@@ -81,6 +82,7 @@ export default class Links{
         newLink.headOrigin.setType(this.lastOriginType);
         newLink.headTarget.setType(this.lastTargetType);
         newLink.setDashed(this.lastDash);
+        newLink.setColor(this.lastColor);
         return newLink;
     }
 

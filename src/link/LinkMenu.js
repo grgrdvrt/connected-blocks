@@ -28,11 +28,19 @@ export default class LinkMenu{
             children:[this.dashIcon]
         })]});
         this.deleteButton = dom({type:"button", children:[deleteIcon()]});
+        this.colorBtn = dom({
+            type:"input",
+            classes:"linkMenu-button colorSelector",
+            attributes:{
+                type:"color",
+            }
+        });
         this.centerMenu = dom({
             classes:["linkMenu-centerMenu"],
             children:[
                 this.deleteButton,
                 this.dashButton,
+                this.colorBtn,
             ]
         });
         this.dom = dom({
@@ -68,11 +76,13 @@ export default class LinkMenu{
                 0.5
             ) + "px",
         });
+        this.colorBtn.value = this.link.color;
         this.updateDashButton();
         this.originMenu.enable();
         this.targetMenu.enable();
         this.deleteButton.addEventListener("click", this.onDeleteClicked);
         this.dashButton.addEventListener("click", this.onDashClicked);
+        this.colorBtn.addEventListener("change", this.onColorChange);
     }
 
     updateDashButton(){
@@ -87,6 +97,7 @@ export default class LinkMenu{
         this.targetMenu.disable();
         this.deleteButton.removeEventListener("click", this.onDeleteClicked);
         this.dashButton.removeEventListener("click", this.onDashClicked);
+        this.colorBtn.removeEventListener("change", this.onColorChange);
     }
 
     onDeleteClicked = () => {
@@ -122,5 +133,17 @@ export default class LinkMenu{
         });
         exec();
         this.context.links.lastDash = !oldDash;
+    }
+
+    onColorChange = () => {
+        const oldColor = this.link.color;
+        const newColor = this.colorBtn.value;
+        const exec = () => this.link.setColor(newColor);
+        this.context.undoStack.addAction({
+            undo:() => this.link.setColor(oldColor),
+            redo:() => exec()
+        });
+        exec();
+        this.context.links.lastColor = newColor;
     }
 }

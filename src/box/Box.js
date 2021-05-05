@@ -74,6 +74,7 @@ export default class Box {
     select(){
         this.isSelected = true;
         this.dom.classList.add("selected");
+        this.menu.setColor(this.color);
         this.content.display.addEventListener("mousedown", this.onStartDrag);
         this.startListeningResize();
     }

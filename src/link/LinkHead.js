@@ -53,6 +53,7 @@ export default class LinkHead{
     constructor(link){
         this.link = link;
         this.initDom();
+        this.color = "#777777";
     }
 
     initDom(){
@@ -62,7 +63,19 @@ export default class LinkHead{
     setType(type){
         this.type = type;
         this.dom.setAttributeNS(null, "d", type.d);
-        this.dom.setAttributeNS(null, "fill", type.fill);
+        this.updateFill();
+    }
+
+    setColor(color){
+        this.color = color;
+        this.updateFill();
+    }
+
+    updateFill(){
+        const value =this.type.fill === "#ffffff" || this.type.fill === "none"
+              ? this.type.fill
+              : this.color;
+        this.dom.setAttributeNS(null, "fill", value);
     }
 
     getSize(){

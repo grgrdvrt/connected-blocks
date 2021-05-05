@@ -21,6 +21,7 @@ export default class BoxMenu{
         });
         this.colorBtn = dom({
             type:"input",
+            classes:"colorSelector",
             attributes:{
                 type:"color",
             }
@@ -47,6 +48,10 @@ export default class BoxMenu{
         this.colorBtn.removeEventListener("change", this.onColorChange);
     }
 
+    setColor(color){
+        this.colorBtn.value = color;
+    }
+
     onDelete = () => {
         this.context.boxes.deleteBox(this.box);
     }
@@ -64,6 +69,7 @@ export default class BoxMenu{
             redo:() => exec()
         });
         exec();
+        this.context.boxes.lastColor = newColor;
     }
 
 }

@@ -148,7 +148,10 @@ export default class Stage{
             x:e.pageX,
             y:e.pageY,
         };
-        this.initialBoxesSelection = e.shiftKey ? this.context.selection.boxes.concat() : [];
+        if(!e.shiftKey){
+            this.context.selection.clear();
+        }
+        this.initialBoxesSelection = this.context.selection.boxes.concat();
         document.body.addEventListener("mousemove", this.onSelect);
         document.body.addEventListener("mouseup", this.onStopSelect);
         this.dom.appendChild(this.selectionRect);
@@ -165,10 +168,7 @@ export default class Stage{
         document.body.removeEventListener("mousemove", this.onSelect);
         document.body.removeEventListener("mouseup", this.onStopSelect);
         this.dom.removeChild(this.selectionRect);
-        const nBoxesInit = this.initialBoxesSelection.length;
-        this.hasSelected =
-            (e.shiftKey && nBoxesInit !== this.context.selection.boxes.length)
-            || nBoxesInit !== 0;
+        this.hasSelected = this.initialBoxesSelection.length !== this.context.selection.boxes.length;
     }
 
     onSelect = e => {
