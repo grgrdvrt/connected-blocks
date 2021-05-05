@@ -97,10 +97,10 @@ export default class Stage{
     onMouseDown = e => {
         e.preventDefault();
         if(e.button === 2){
-            this.onStartPan(e);
+            this.onStartSelect(e);
         }
         else{
-            this.onStartSelect(e);
+            this.onStartPan(e);
         }
     }
 
