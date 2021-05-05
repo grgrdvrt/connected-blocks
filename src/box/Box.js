@@ -12,6 +12,7 @@ export default class Box {
         this.height = 100;
         this.isSelected = false;
         this.isDragging = false;
+        this.color = "#000000";
         this.initDom();
     }
 
@@ -137,6 +138,14 @@ export default class Box {
         this.context.selection.startDrag(e.pageX, e.pageY);
     }
 
+    setColor(color = "#000000"){
+        this.color = color;
+        Object.assign(this.dom.style, {
+            color:color,
+            backgroundColor:color + "11",
+        });
+    }
+
     setPosition(x, y){
         this.x = x;
         this.y = y;
@@ -163,13 +172,15 @@ export default class Box {
         this.x = memento.x;
         this.y = memento.y;
         this.content.setValue(memento.content);
+        this.setColor(memento.color);
     }
 
     getMemento(){
         return {
             x:this.x,
             y:this.y,
-            content:this.content.value
+            content:this.content.value,
+            color:this.color,
         };
     }
 }

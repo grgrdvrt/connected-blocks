@@ -97,7 +97,7 @@ button:hover{
 
 
 .box.selected{
-    border:solid 2px #777777;
+    border:solid 2px currentColor;
 }
 
 .box-menu{
@@ -146,6 +146,7 @@ button:hover{
     outline: 0px solid transparent;
     overflow:auto;
     display:none;
+    color:initial;
 }
 
 .box-content.edition .box-content-display{

@@ -38,6 +38,12 @@ export default class Stage{
         this.background.addEventListener("dragover", this.onDragOver);
         this.background.addEventListener("dragleave", this.onDragLeave);
         this.background.addEventListener("drop", this.onDrop);
+
+        this.background.addEventListener("contextmenu", e => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
     }
 
     onDragOver = e => {
@@ -91,11 +97,13 @@ export default class Stage{
     }
 
     onMouseDown = e => {
-        if(e.shiftKey){
-            this.onStartSelect(e);
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.button === 2){
+            this.onStartPan(e);
         }
         else{
-            this.onStartPan(e);
+            this.onStartSelect(e);
         }
     }
 
@@ -142,7 +150,7 @@ export default class Stage{
             x:e.pageX,
             y:e.pageY,
         };
-        this.initialBoxesSelection = this.context.selection.boxes.concat();
+        this.initialBoxesSelection = e.shiftKey ? this.context.selection.boxes.concat() : [];
         document.body.addEventListener("mousemove", this.onSelect);
         document.body.addEventListener("mouseup", this.onStopSelect);
         this.dom.appendChild(this.selectionRect);

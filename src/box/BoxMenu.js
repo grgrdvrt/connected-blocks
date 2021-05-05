@@ -19,11 +19,18 @@ export default class BoxMenu{
             children:[deleteIcon()],
             classes:"box-menu-deleteBtn",
         });
+        this.colorBtn = dom({
+            type:"input",
+            attributes:{
+                type:"color",
+            }
+        });
         this.dom = dom({
             classes:"box-menu",
             children:[
                 this.lineBtn,
                 this.deleteBtn,
+                this.colorBtn,
             ]
         });
     }
@@ -31,11 +38,13 @@ export default class BoxMenu{
     enable(){
         this.lineBtn.addEventListener("mousedown", this.onLineDown);
         this.deleteBtn.addEventListener("click", this.onDelete);
+        this.colorBtn.addEventListener("change", this.onColorChange);
     }
 
     disable(){
         this.lineBtn.removeEventListener("mousedown", this.onLineDown);
         this.deleteBtn.removeEventListener("click", this.onDelete);
+        this.colorBtn.removeEventListener("change", this.onColorChange);
     }
 
     onDelete = () => {
@@ -44,6 +53,17 @@ export default class BoxMenu{
 
     onLineDown = () => {
         this.context.links.startCreatingLink(this.box);
+    }
+
+    onColorChange = () => {
+        const oldColor = this.box.color;
+        const newColor = this.colorBtn.value;
+        const exec = () => this.box.setColor(newColor);
+        this.context.undoStack.addAction({
+            undo:() => this.box.setColor(oldColor),
+            redo:() => exec()
+        });
+        exec();
     }
 
 }
