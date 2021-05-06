@@ -170,14 +170,15 @@ export default class Box {
     }
 
     setMemento(memento){
-        this.x = memento.x;
-        this.y = memento.y;
+        this.id = memento.id;
+        this.setPosition(memento.x, memento.y)
         this.content.setValue(memento.content);
         this.setColor(memento.color);
     }
 
     getMemento(){
         return {
+            id:this.id,
             x:this.x,
             y:this.y,
             content:this.content.value,

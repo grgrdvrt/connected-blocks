@@ -91,7 +91,7 @@ export default class Boxes{
 
     setMemento(memento){
         memento.forEach(boxMemento => {
-            const box = this.createBox(boxMemento.x, boxMemento.y, boxMemento.content);
+            const box = new Box();
             box.setMemento(boxMemento);
             this.addBox(box);
         });
