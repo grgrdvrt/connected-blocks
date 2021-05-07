@@ -1,7 +1,14 @@
 import {dom,} from "../utils/dom";
+import {
+    lerpColors,
+    hexToRgb,
+    rgbToHex,
+} from "../utils/maths";
 
 import BoxMenu from "./BoxMenu";
 import BoxContent from "./BoxContent";
+
+const WHITE = [255, 255, 255];
 
 export default class Box {
     constructor(context){
@@ -143,7 +150,7 @@ export default class Box {
         this.color = color;
         Object.assign(this.dom.style, {
             color:color,
-            backgroundColor:color + "11",
+            backgroundColor:rgbToHex(lerpColors(hexToRgb(color), WHITE, 0.93)),
         });
     }
 
@@ -171,7 +178,7 @@ export default class Box {
 
     setMemento(memento){
         this.id = memento.id;
-        this.setPosition(memento.x, memento.y)
+        this.setPosition(memento.x, memento.y);
         this.content.setValue(memento.content);
         this.setColor(memento.color);
     }

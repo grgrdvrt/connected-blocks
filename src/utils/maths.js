@@ -36,3 +36,27 @@ export function cubic(a, b, c, d, t){
     const ot2 = ot * ot;
     return a*ot2*ot + 3*b*ot2*t + 3*c*ot*t2 + d*t2*t;
 }
+
+function intToHex(value){
+    return Math.round(value).toString(16);
+}
+
+export function hexToRgb(hex){
+    return [
+        parseInt(hex.substr(1, 2), 16),
+        parseInt(hex.substr(3, 2), 16),
+        parseInt(hex.substr(5, 2), 16)
+    ];
+}
+export function rgbToHex(rgb){
+    return "#" + intToHex(rgb[0]) + intToHex(rgb[1]) + intToHex(rgb[2]);
+}
+
+export function lerpColors(a, b, t){
+    return [
+        lerp(a[0], b[0], t),
+        lerp(a[1], b[1], t),
+        lerp(a[2], b[2], t),
+    ];
+}
+

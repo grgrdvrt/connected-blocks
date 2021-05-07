@@ -90,9 +90,10 @@ export default class Boxes{
     }
 
     setMemento(memento){
-        memento.forEach(boxMemento => {
-            const box = new Box();
+        memento.forEach((boxMemento, i) => {
+            const box = new Box(this.context);
             box.setMemento(boxMemento);
+            box.id = i;
             this.addBox(box);
         });
         nextId = this.boxes[this.boxes.length - 1].id + 1;
