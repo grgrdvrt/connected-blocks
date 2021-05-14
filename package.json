@@ -1,5 +1,5 @@
 {
-  "name": "quick-box-graph",
+  "name": "connected-blocks",
   "version": "1.0.0",
   "description": "a tool to create graphs of boxes",
   "main": "src/index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grgrdvrt/quick-box-graph.git"
+    "url": "git+https://github.com/grgrdvrt/connected-blocks.git"
   },
   "keywords": [
     "graph",
@@ -19,9 +19,9 @@
   "author": "grgrdvrt",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/grgrdvrt/quick-box-graph/issues"
+    "url": "https://github.com/grgrdvrt/connected-blocks/issues"
   },
-  "homepage": "https://github.com/grgrdvrt/quick-box-graph#readme",
+  "homepage": "https://github.com/grgrdvrt/connected-blocks#readme",
   "dependencies": {
     "esbuild": "^0.11.16"
   }

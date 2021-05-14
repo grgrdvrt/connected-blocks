@@ -1,2 +1,2 @@
-# quick-box-graph
+# connected-blocks
 make a graph of boxes
