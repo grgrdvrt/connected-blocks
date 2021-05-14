@@ -1,10 +1,10 @@
 import {dom, svg} from "../utils/dom";
 import Box from "./Box";
 
-let nextId = 0;
 export default class Boxes{
     constructor(context){
         this.context = context;
+        this.nextId = 0;
         this.boxes = [];
         this.initDom();
         this.lastColor = "#000000";
@@ -34,8 +34,8 @@ export default class Boxes{
 
     createBox(x, y, defaultContent){
         const box = new Box(this.context);
-        box.id = nextId;
-        nextId++;
+        box.id = this.nextId;
+        this.nextId++;
         box.setPosition(x, y);
         if(defaultContent){
             box.setContent(defaultContent);
@@ -90,16 +90,32 @@ export default class Boxes{
     }
 
     setMemento(memento){
-        memento.forEach((boxMemento, i) => {
+        let maxId = this.nextId;
+        const newBoxes = memento.map((boxMemento, i) => {
             const box = new Box(this.context);
             box.setMemento(boxMemento);
-            box.id = i;
+            if(!box.id)box.id = i;
+            if(box.id >= maxId)maxId = box.id + 1;
+            return box;
+        });
+        newBoxes.forEach(box => {
             this.addBox(box);
         });
-        nextId = this.boxes[this.boxes.length - 1].id + 1;
+        this.nextId = maxId + 1;
+        return newBoxes;
     }
 
     getMemento(){
         return this.boxes.map(box => box.getMemento());
+    }
+
+    clear(){
+        this.nextId = 0;
+        this.boxes.forEach(box => {
+            box.disable();
+            this.dom.removeChild(box.dom);
+        });
+        this.boxes.length = 0;
+        this.context.selection.clearBoxes();
     }
 }

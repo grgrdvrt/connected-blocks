@@ -59,17 +59,25 @@ export default class Selection {
         links.forEach(link => this.addLink(link));
     }
 
-    clear(){
+    clearBoxes(){
         this.boxes.forEach(box => {
             box.deselect();
         });
         this.boxes.length = 0;
+        this.context.selectionMenu.updateVisibility();
+    }
+
+    clearLinks(){
         this.links.forEach(link => {
             link.deselect();
         });
         this.links.length = 0;
         this.context.links.update();
-        this.context.selectionMenu.updateVisibility();
+    }
+
+    clear(){
+        this.clearBoxes();
+        this.clearLinks();
     }
 
     startDrag(x, y){
@@ -134,5 +142,23 @@ export default class Selection {
             .forEach(link => link.update());
 
         this.context.selectionMenu.update();
+    }
+
+    copy(){
+        const links = Array.from((this.boxes.reduce((relatedLinks, box) => {
+            const boxRelatedLinks = this.context.links.getRelatedLinks(box);
+            boxRelatedLinks.forEach(link => {
+                relatedLinks.add(link);
+            });
+            return relatedLinks;
+        }, new Set()))).filter(link => {
+            return this.boxes.includes(link.origin)
+                && this.boxes.includes(link.target);
+        });
+        return {
+            boxes:this.boxes.map(box => box.getMemento()),
+            links:links.map(link => link.getMemento()),
+        };
+
     }
 }

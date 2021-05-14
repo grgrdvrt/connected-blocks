@@ -36,7 +36,9 @@ class Main {
         window.addEventListener("resize", this.onResize);
         this.onResize();
 
-        this.initDebug();
+        window.addEventListener("keydown", this.onKeydown);
+
+        // this.initDebug();
     }
 
     initDebug(){
@@ -50,9 +52,67 @@ class Main {
         this.links.setSize(this.stage.width, this.stage.height);
     }
 
+    onKeydown = e => {
+        if(e.ctrlKey){
+            switch(e.key){
+                case "c":
+                    this.copiedData = JSON.stringify(this.selection.copy());
+                    break;
+                case "v":
+                    this.paste();
+                    break;
+            }
+        }
+    }
+
+    addMemento(memento){
+        const baseId = this.boxes.nextId;
+        const clone = JSON.parse(JSON.stringify(memento));
+        clone.boxes.forEach(box => {
+            box.id += baseId;
+        });
+        clone.links.forEach(link => {
+            link.origin.id += baseId;
+            link.target.id += baseId;
+        });
+        const newBoxes = this.boxes.setMemento(clone.boxes);
+        const newLinks = this.links.setMemento(clone.links);
+        return {newBoxes, newLinks};
+    }
+
+    paste(){
+        const memento = JSON.parse(this.copiedData);
+        const {newBoxes, newLinks} = this.addMemento(memento);
+
+        this.selection.setBoxes(newBoxes);
+        newBoxes.forEach(box => {
+            box.setPosition(box.x + 50, box.y + 50);
+        });
+        this.undoStack.addAction({
+            undo:() => {
+                newBoxes.forEach(box => {
+                    this.boxes.removeBox(box);
+                });
+                newLinks.forEach(link => {
+                    this.links.removeLink(link);
+                });
+            },
+            redo:() => {
+                newBoxes.forEach(box => {
+                    this.boxes.addBox(box);
+                });
+                newLinks.forEach(link => {
+                    this.links.addLink(link);
+                });
+            },
+        });
+    }
+
+
     setMemento(memento){
-        this.boxes.setMemento(memento.boxes);
-        this.links.setMemento(memento.links);
+        this.boxes.clear();
+        this.links.clear();
+        this.addMemento(memento);
     }
 
     getMemento(){

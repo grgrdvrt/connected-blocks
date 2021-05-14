@@ -95,11 +95,11 @@ export default class Links{
     }
 
     removeLink(link){
+        link.disable();
         const id = this.links.indexOf(link);
         if(id !== -1){
             this.links.splice(id, 1);
             this.dom.removeChild(link.dom);
-            link.disable();
         }
     }
 
@@ -133,17 +133,30 @@ export default class Links{
     }
 
     setMemento(memento){
-        memento.forEach(linkMemento => {
+        const newLinks = memento.map(linkMemento => {
             const link = this.createLink(
                 this.context.boxes.getBoxById(linkMemento.origin.id),
                 this.context.boxes.getBoxById(linkMemento.target.id),
             );
             link.setMemento(linkMemento);
+            return link;
+        });
+        newLinks.forEach(link => {
             this.addLink(link);
         });
+        return newLinks;
     }
 
     getMemento(){
         return this.links.map(link => link.getMemento());
+    }
+
+    clear(){
+        this.links.forEach(link => {
+            this.dom.removeChild(link.dom);
+            link.disable();
+        });
+        this.links.length = 0;
+        this.context.selection.clearLinks();
     }
 }
