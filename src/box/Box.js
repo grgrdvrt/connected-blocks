@@ -109,26 +109,7 @@ export default class Box {
 
     stopListeningResize(){
         const {width, height} = this.content.dom.style;
-        const {width:oldWidth, height:oldHeight} = this.initialContentSize;
-        if((width || height) && (width !== oldWidth || height !== oldWidth)){
-            this.context.undoStack.addAction({
-                description:"resize box",
-                undo:() => {
-                    Object.assign(this.content.dom.style, {
-                        width:oldWidth,
-                        height:oldHeight,
-                    });
-                    this.updateRelatedLinks();
-                },
-                redo:() => {
-                    Object.assign(this.content.dom.style, {
-                        width:width,
-                        height:height,
-                    });
-                    this.updateRelatedLinks();
-                }
-            });
-        }
+        this.context.boxesActions.resizeBox(this, width, height);
         cancelAnimationFrame(this.resizeRaf);
     }
 

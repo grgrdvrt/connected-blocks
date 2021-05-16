@@ -95,20 +95,7 @@ export default class BoxContent{
             return;
         }
         const newContent = this.input.innerText.trim();
-        const oldContent = this.value;
-        if(newContent !== oldContent){
-            const exec = () => this.setValue(newContent);
-            this.context.undoStack.addAction({
-                description:"edit box",
-                undo:() => {
-                    this.setValue(oldContent);
-                },
-                redo:() => {
-                    exec();
-                }
-            });
-            exec();
-        }
+        this.context.boxesActions.editBoxContent(this, newContent);
         this.disableEdition();
     }
 

@@ -101,49 +101,18 @@ export default class LinkMenu{
     }
 
     onDeleteClicked = () => {
-        const link = this.link;
-        const exec = () => {
-            this.context.links.removeLink(link);
-        };
-        this.context.undoStack.addAction({
-            undo:() => {
-                this.context.links.addLink(link);
-            },
-            redo:() => {
-                exec();
-            }
-        });
-        exec();
-        this.context.selection.removeLink(link);
+        this.context.linksActions.deleteLink(this.link);
     }
 
     onDashClicked = () => {
         const link = this.link;
-        const oldDash = this.link.isDashed;
-        const exec = () => {
-            link.setDashed(!oldDash);
-        };
-        this.context.undoStack.addAction({
-            undo:() => {
-                link.setDashed(oldDash);
-            },
-            redo:() => {
-                exec();
-            }
-        });
-        exec();
-        this.context.links.lastDash = !oldDash;
+        const newDash = !link.isDashed;
+        this.context.linksActions.setLinkDash(link, newDash);
+        this.context.links.lastDash = newDash;
     }
 
     onColorChange = () => {
-        const oldColor = this.link.color;
         const newColor = this.colorBtn.value;
-        const exec = () => this.link.setColor(newColor);
-        this.context.undoStack.addAction({
-            undo:() => this.link.setColor(oldColor),
-            redo:() => exec()
-        });
-        exec();
-        this.context.links.lastColor = newColor;
+        this.context.linksActions.setLinkColor(this.link, newColor);
     }
 }

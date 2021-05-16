@@ -85,7 +85,10 @@ export default class Stage{
     }
 
     onDoubleClick = e => {
-        this.context.boxes.startBoxCreation(e.pageX - this.x, e.pageY - this.y);
+        this.context.boxesActions.startBoxCreation(
+            e.pageX - this.x,
+            e.pageY - this.y
+        );
     }
 
     onClick = e => {

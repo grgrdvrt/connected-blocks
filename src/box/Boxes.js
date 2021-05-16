@@ -14,24 +14,6 @@ export default class Boxes{
         this.dom = dom({classes:"boxes"});
     }
 
-    startBoxCreation(x, y){
-        const box = this.createBox(x, y);
-        this.context.selection.setBoxes([box]);
-
-        const exec = () => this.addBox(box);
-        this.context.undoStack.addAction({
-            description:"add box",
-            undo:() => {
-                this.removeBox(box);
-            },
-            redo:() => {
-                exec();
-            },
-        });
-        exec();
-        box.content.enableEdition();
-    }
-
     createBox(x, y, defaultContent){
         const box = new Box(this.context);
         box.id = this.nextId;
@@ -60,25 +42,6 @@ export default class Boxes{
             this.boxes.splice(id, 1);
             this.dom.removeChild(box.dom);
         }
-    }
-
-    deleteBox(box){
-        const links = this.context.links.getRelatedLinks(box);
-        const exec = () => {
-            this.removeBox(box);
-            links.forEach(link => this.context.links.removeLink(link));
-        };
-        this.context.undoStack.addAction({
-            description:"delete box",
-            undo:() => {
-                this.addBox(box);
-                links.forEach(link => this.context.links.addLink(link));
-            },
-            redo:() => {
-                exec();
-            }
-        });
-        exec();
     }
 
     getBoxByDom(dom){

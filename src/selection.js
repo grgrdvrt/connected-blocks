@@ -81,67 +81,23 @@ export default class Selection {
     }
 
     startDrag(x, y){
-        this.initialDragPosition = {x, y};
         this.isDragging = false;
+        this.dragInfos = this.context.boxesActions.startDragBoxes(this.boxes.concat(), {x, y});
 
         this.context.dom.addEventListener("mouseup", this.onStopDrag);
         this.context.dom.addEventListener("mousemove", this.onDrag);
-        this.initialBoxesPositions = this.boxes.map(box => {
-            return {x:box.x, y:box.y};
-        });
+
     }
 
     onStopDrag = e => {
         this.context.dom.removeEventListener("mouseup", this.onStopDrag);
         this.context.dom.removeEventListener("mousemove", this.onDrag);
-
-        const delta = {
-            x:e.pageX - this.initialDragPosition.x,
-            y:e.pageY - this.initialDragPosition.y,
-        };
-        const movedBoxes = this.boxes.concat();
-        this.context.undoStack.addAction({
-            description:"move boxes",
-            undo:() => {
-                movedBoxes.forEach(box => {
-                    box.setPosition(
-                        box.x - delta.x,
-                        box.y - delta.y,
-                    );
-                });
-                this.context.links.update();
-            },
-            redo:() => {
-                movedBoxes.forEach(box => {
-                    box.setPosition(
-                        box.x + delta.x,
-                        box.y + delta.y,
-                    );
-                });
-                this.context.links.update();
-            }
-        });
+        this.context.boxesActions.stopDragBoxes(this.dragInfos, {x:e.pageX, y:e.pageY});
     }
 
     onDrag = e => {
         this.isDragging = true;
-        const delta = {
-            x:e.pageX - this.initialDragPosition.x,
-            y:e.pageY - this.initialDragPosition.y,
-        };
-        this.boxes.forEach((box, i) => {
-            const initPos = this.initialBoxesPositions[i];
-            box.setPosition(
-                initPos.x + delta.x,
-                initPos.y + delta.y,
-            );
-            box.isDragging = true;
-        });
-
-        (new Set(this.boxes.map(box => this.context.links.getRelatedLinks(box)).flat()))
-            .forEach(link => link.update());
-
-        this.context.selectionMenu.update();
+        this.context.boxesActions.dragBoxes(this.dragInfos, {x:e.pageX, y:e.pageY});
     }
 
     copy(){

@@ -55,23 +55,8 @@ export default class ArrowMenu{
         const id = e.target.dataset.id;
         if(id !== undefined){
             const type = Object.values(headTypes)[id];
-            const prevType = this.linkHead.type;
             this.setDefaultFunc(type);
-            const exec = () => {
-                this.linkHead.setType(type);
-                this.linkHead.link.update();
-            };
-            this.context.undoStack.addAction({
-                description:"set link head type",
-                undo:() => {
-                    this.linkHead.setType(prevType);
-                    this.linkHead.link.update();
-                },
-                redo:() => {
-                    exec();
-                },
-            });
-            exec();
+            this.context.linksActions.setLinkHeadType(this.linkHead, type);
         }
     }
 

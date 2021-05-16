@@ -53,7 +53,7 @@ export default class BoxMenu{
     }
 
     onDelete = () => {
-        this.context.boxes.deleteBox(this.box);
+        this.context.boxesActions.deleteBox(this.box);
     }
 
     onLineDown = () => {
@@ -61,15 +61,9 @@ export default class BoxMenu{
     }
 
     onColorChange = () => {
-        const oldColor = this.box.color;
         const newColor = this.colorBtn.value;
-        const exec = () => this.box.setColor(newColor);
-        this.context.undoStack.addAction({
-            undo:() => this.box.setColor(oldColor),
-            redo:() => exec()
-        });
-        exec();
         this.context.boxes.lastColor = newColor;
+        this.context.boxesActions.changeBoxColor(this.box, newColor);
     }
 
 }

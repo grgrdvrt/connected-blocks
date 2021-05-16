@@ -49,20 +49,7 @@ export default class Links{
         while(target && target !== document.body){
             const box = this.context.boxes.getBoxByDom(target);
             if(box && box !== this.originBox){
-                const link = this.createLink(this.originBox, box);
-                const exec = () => this.addLink(link);
-                const action = this.context.undoStack.addAction({
-                    description:"add link",
-                    undo:() => {
-                        this.removeLink(link);
-                    },
-                    redo:() => {
-                        exec();
-                    }
-                });
-                exec();
-                this.context.selection.setLinks([link]);
-
+                this.context.linksActions.createLink(this.originBox, box);
                 break;
             }
             target = target.parentNode;

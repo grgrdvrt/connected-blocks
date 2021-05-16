@@ -151,7 +151,7 @@ export default class SelectionMenu{
                 y:ratios.rect[1] * ry + ratios.rect[3] * rh + ratios.box[1] * by + ratios.box[3] * bh
             };
         });
-        this.setBoxesPositions(boxes, newPositions);
+        this.context.boxesActions.setBoxesPositions(boxes, newPositions);
     }
 
     distributeBoxes(ratios){
@@ -181,29 +181,6 @@ export default class SelectionMenu{
             y += (space.y + rect.height);
             return pos;
         });
-        this.setBoxesPositions(boxes, newPositions);
-    }
-
-    setBoxesPositions(boxes, newPositions){
-        const oldPositions = boxes.map(box => {
-            const {x, y} = box.getRect();
-            return {x, y};
-        });
-        const setPositions = positions => {
-            boxes.forEach((box, i) => {
-                const pos = positions[i];
-                box.setPosition(pos.x, pos.y);
-            });
-            this.context.links.update();
-        };
-        this.context.undoStack.addAction({
-            undo:() => {
-                setPositions(oldPositions);
-            },
-            redo:() => {
-                setPositions(newPositions);
-            }
-        });
-        setPositions(newPositions);
+        this.context.boxesActions.setBoxesPositions(boxes, newPositions);
     }
 }

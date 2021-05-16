@@ -1,6 +1,8 @@
 import Stage from "./stage";
 import Boxes from "./box/Boxes";
+import BoxesActions from "./box/BoxesActions";
 import Links from "./link/Links";
+import LinksActions from "./link/LinksActions";
 import LinkMenu from "./link/LinkMenu";
 import Selection from "./selection";
 import SelectionMenu from "./SelectionMenu";
@@ -17,10 +19,15 @@ class Main {
         this.undoStack = new UndoStack(this);
         this.undoStack.enable();
 
+        this.boxesActions = new BoxesActions(this);
+        this.linksActions = new LinksActions(this);
+
         this.links = new Links(this);
         this.stage.fixedDom.appendChild(this.links.dom);
+
         this.boxes = new Boxes(this);
         this.stage.pannableDom.appendChild(this.boxes.dom);
+
         this.linkMenu = new LinkMenu(this);
         this.stage.pannableDom.appendChild(this.linkMenu.dom);
 
