@@ -53,6 +53,5 @@ export default class UndoStack{
         this.actions.length = this.id;
         this.actions.push(action);
         this.id++;
-        console.log(this.actions);
     }
 }

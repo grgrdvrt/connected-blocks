@@ -162,15 +162,24 @@ export default class Box {
         this.setPosition(memento.x, memento.y);
         this.content.setValue(memento.content);
         this.setColor(memento.color);
+        const {width, height} = memento;
+        if(width !== undefined || height !== undefined){
+            Object.assign(this.content.dom.style, {width, height});
+        }
     }
 
     getMemento(){
-        return {
+        const memento ={
             id:this.id,
             x:this.x,
             y:this.y,
             content:this.content.value,
             color:this.color,
         };
+        const {width, height} = this.content.dom.style;
+        if(width !== undefined || height !== undefined){
+            Object.assign(memento, {width, height});
+        }
+        return memento;
     }
 }
