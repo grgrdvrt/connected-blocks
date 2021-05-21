@@ -68,19 +68,16 @@ export default class Link{
     select(){
         this.isSelected = true;
         this.dom.classList.add("selected");
-        this.context.linkMenu.open(this);
     }
 
     deselect(){
         this.isSelected = false;
         this.dom.classList.remove("selected");
-        this.context.linkMenu.close();
     }
 
     setDashed(isDashed){
         this.isDashed = isDashed;
         this.line.setAttributeNS(null, "stroke-dasharray", this.isDashed ? "4" : "");
-        this.context.linkMenu.updateDashButton();
     }
 
     setColor(color = "#000000"){
@@ -133,8 +130,8 @@ export default class Link{
             this.shadowLine.setAttributeNS(null, "d", d);
         }
         else{
-            this.shadowLine.setAttributeNS(null, "d", "");
             this.line.setAttributeNS(null, "d", "");
+            this.shadowLine.setAttributeNS(null, "d", "");
         }
     }
 

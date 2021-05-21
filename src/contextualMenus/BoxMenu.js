@@ -2,9 +2,8 @@ import {dom} from "../utils/dom";
 import {linkIcon, deleteIcon} from "../utils/icons";
 
 export default class BoxMenu{
-    constructor(context, box){
+    constructor(context){
         this.context = context;
-        this.box = box;
         this.initDom();
     }
 
@@ -12,12 +11,12 @@ export default class BoxMenu{
         this.lineBtn = dom({
             type:"button",
             children:[linkIcon()],
-            classes:"box-menu-lineBtn",
+            classes:"boxMenu-lineBtn",
         });
         this.deleteBtn = dom({
             type:"button",
             children:[deleteIcon()],
-            classes:"box-menu-deleteBtn",
+            classes:"boxMenu-deleteBtn",
         });
         this.colorBtn = dom({
             type:"input",
@@ -27,12 +26,37 @@ export default class BoxMenu{
             }
         });
         this.dom = dom({
-            classes:"box-menu",
+            classes:"boxMenu closed",
             children:[
                 this.lineBtn,
                 this.deleteBtn,
                 this.colorBtn,
             ]
+        });
+    }
+
+    setBox(box){
+        this.box = box;
+        this.update();
+    }
+
+    open(){
+        this.enable();
+        this.dom.classList.remove("closed");
+    }
+
+    close(){
+        this.disable();
+        this.dom.classList.add("closed");
+    }
+
+    update(){
+        this.colorBtn.value = this.box.color;
+        const rect = this.box.getRect();
+        Object.assign(this.dom.style, {
+            left:rect.x + "px",
+            top:rect.y + "px",
+            transform:'translateY(-110%)',
         });
     }
 
@@ -48,12 +72,8 @@ export default class BoxMenu{
         this.colorBtn.removeEventListener("change", this.onColorChange);
     }
 
-    setColor(color){
-        this.colorBtn.value = color;
-    }
-
     onDelete = () => {
-        this.context.boxesActions.deleteBox(this.box);
+        this.context.boxesActions.deleteBoxes([this.box]);
     }
 
     onLineDown = () => {
@@ -63,7 +83,7 @@ export default class BoxMenu{
     onColorChange = () => {
         const newColor = this.colorBtn.value;
         this.context.boxes.lastColor = newColor;
-        this.context.boxesActions.changeBoxColor(this.box, newColor);
+        this.context.boxesActions.changeBoxesColor([this.box], newColor);
     }
 
 }

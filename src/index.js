@@ -3,10 +3,9 @@ import Boxes from "./box/Boxes";
 import BoxesActions from "./box/BoxesActions";
 import Links from "./link/Links";
 import LinksActions from "./link/LinksActions";
-import LinkMenu from "./link/LinkMenu";
 import Selection from "./selection";
-import SelectionMenu from "./SelectionMenu";
-import ExportMenu from "./ExportMenu";
+import ContextualMenus from "./contextualMenus/ContextualMenus";
+import Menu from "./Menu";
 import UndoStack from "./undoStack";
 
 class Main {
@@ -28,15 +27,12 @@ class Main {
         this.boxes = new Boxes(this);
         this.stage.pannableDom.appendChild(this.boxes.dom);
 
-        this.linkMenu = new LinkMenu(this);
-        this.stage.pannableDom.appendChild(this.linkMenu.dom);
+        this.contextualMenus = new ContextualMenus(this);
+        this.stage.pannableDom.appendChild(this.contextualMenus.dom);
 
-        this.selectionMenu = new SelectionMenu(this);
-        this.stage.pannableDom.appendChild(this.selectionMenu.dom);
-
-        this.exportMenu = new ExportMenu(this);
-        this.exportMenu.enable();
-        this.dom.appendChild(this.exportMenu.dom);
+        this.menu = new Menu(this);
+        this.menu.enable();
+        this.dom.appendChild(this.menu.dom);
 
         this.selection = new Selection(this);
 
@@ -45,7 +41,7 @@ class Main {
 
         window.addEventListener("keydown", this.onKeydown);
 
-        // this.initDebug();
+        this.initDebug();
     }
 
     initDebug(){

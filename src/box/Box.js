@@ -5,7 +5,6 @@ import {
     rgbToHex,
 } from "../utils/maths";
 
-import BoxMenu from "./BoxMenu";
 import BoxContent from "./BoxContent";
 
 const WHITE = [255, 255, 255];
@@ -24,26 +23,20 @@ export default class Box {
     }
 
     initDom(){
-        this.menu = new BoxMenu(this.context, this);
         this.content = new BoxContent(this.context, this);
         this.dom = dom({
             classes:"box",
-            children:[
-                this.menu.dom,
-                this.content.dom,
-            ]
+            children:[this.content.dom]
         });
     }
 
     enable(){
         this.enableSelection();
-        this.menu.enable();
         this.content.enable();
     }
 
     disable(){
         this.disableSelection();
-        this.menu.disable();
         this.content.disable();
         this.content.display.removeEventListener("mousedown", this.onStartDrag);
     }
@@ -81,7 +74,6 @@ export default class Box {
     select(){
         this.isSelected = true;
         this.dom.classList.add("selected");
-        this.menu.setColor(this.color);
         this.content.display.addEventListener("mousedown", this.onStartDrag);
         this.startListeningResize();
     }
@@ -143,7 +135,7 @@ export default class Box {
     }
 
     updateRelatedLinks(){
-        this.context.links.getRelatedLinks(this)
+        this.context.links.getRelatedLinks([this])
             .forEach(link => link.update());
     }
 

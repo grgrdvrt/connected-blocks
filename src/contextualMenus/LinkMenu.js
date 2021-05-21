@@ -44,7 +44,7 @@ export default class LinkMenu{
             ]
         });
         this.dom = dom({
-            classes:"linkMenu",
+            classes:"linkMenu closed",
             children:[
                 this.originMenu.dom,
                 this.targetMenu.dom,
@@ -53,9 +53,30 @@ export default class LinkMenu{
         });
     }
 
-    open(link){
-        this.dom.classList.add("opened");
+    setLink(link){
         this.link = link;
+        this.update();
+    }
+
+    open(){
+        this.dom.classList.remove("closed");
+        this.originMenu.enable();
+        this.targetMenu.enable();
+        this.deleteButton.addEventListener("click", this.onDeleteClicked);
+        this.dashButton.addEventListener("click", this.onDashClicked);
+        this.colorBtn.addEventListener("change", this.onColorChange);
+    }
+
+    close(){
+        this.dom.classList.add("closed");
+        this.originMenu.disable();
+        this.targetMenu.disable();
+        this.deleteButton.removeEventListener("click", this.onDeleteClicked);
+        this.dashButton.removeEventListener("click", this.onDashClicked);
+        this.colorBtn.removeEventListener("change", this.onColorChange);
+    }
+
+    update(){
         this.originMenu.setLinkHead(this.link.headOrigin);
         this.targetMenu.setLinkHead(this.link.headTarget);
         const {x:ox, y:oy, normal:on} = this.link.headOrigin;
@@ -77,27 +98,7 @@ export default class LinkMenu{
             ) + "px",
         });
         this.colorBtn.value = this.link.color;
-        this.updateDashButton();
-        this.originMenu.enable();
-        this.targetMenu.enable();
-        this.deleteButton.addEventListener("click", this.onDeleteClicked);
-        this.dashButton.addEventListener("click", this.onDashClicked);
-        this.colorBtn.addEventListener("change", this.onColorChange);
-    }
-
-    updateDashButton(){
-        if(this.link){
-            this.dashIcon.setAttributeNS(null, "stroke-dasharray", this.link.isDashed ? "" : "3");
-        }
-    }
-
-    close(){
-        this.dom.classList.remove("opened");
-        this.originMenu.disable();
-        this.targetMenu.disable();
-        this.deleteButton.removeEventListener("click", this.onDeleteClicked);
-        this.dashButton.removeEventListener("click", this.onDashClicked);
-        this.colorBtn.removeEventListener("change", this.onColorChange);
+        this.dashIcon.setAttributeNS(null, "stroke-dasharray", this.link.isDashed ? "" : "3");
     }
 
     onDeleteClicked = () => {

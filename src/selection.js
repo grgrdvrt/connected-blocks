@@ -8,19 +8,22 @@ export default class Selection {
 
     addBox(box){
         this._addBox(box);
-        this.context.selectionMenu.updateVisibility();
+        this.context.contextualMenus.update();
     }
 
     removeBox(box){
         this._removeBox(box);
-        this.context.selectionMenu.updateVisibility();
+        this.context.contextualMenus.update();
     }
 
     setBoxes(boxes){
         this.boxes.concat().forEach(box => this._removeBox(box));
         this.boxes.length = 0;
         boxes.forEach(box => this._addBox(box));
-        this.context.selectionMenu.updateVisibility();
+        if(this.links.length){
+            this.clearLinks();
+        }
+        this.context.contextualMenus.update();
     }
 
     _removeBox(box){
@@ -39,13 +42,26 @@ export default class Selection {
     }
 
     addLink(link){
-        link.select();
-        if(!this.links.includes(link)){
-            this.links.push(link);
-        }
+        this._addLink(link);
+        this.context.contextualMenus.update();
     }
 
     removeLink(link){
+        this._removeLink(link);
+        this.context.contextualMenus.update();
+    }
+
+    setLinks(links){
+        this.links.concat().forEach(link => this._removeLink(link));
+        this.links.length = 0;
+        links.forEach(link => this._addLink(link));
+        if(this.boxes.length){
+            this.clearBoxes();
+        }
+        this.context.contextualMenus.update();
+    }
+
+    _removeLink(link){
         link.deselect();
         const id = this.links.indexOf(link);
         if(id !== -1){
@@ -53,10 +69,11 @@ export default class Selection {
         }
     }
 
-    setLinks(links){
-        this.links.concat().forEach(link => this.removeLink(link));
-        this.links.length = 0;
-        links.forEach(link => this.addLink(link));
+    _addLink(link){
+        link.select();
+        if(!this.links.includes(link)){
+            this.links.push(link);
+        }
     }
 
     clearBoxes(){
@@ -64,7 +81,6 @@ export default class Selection {
             box.deselect();
         });
         this.boxes.length = 0;
-        this.context.selectionMenu.updateVisibility();
     }
 
     clearLinks(){
@@ -78,6 +94,7 @@ export default class Selection {
     clear(){
         this.clearBoxes();
         this.clearLinks();
+        this.context.contextualMenus.update();
     }
 
     startDrag(x, y){
@@ -98,11 +115,12 @@ export default class Selection {
     onDrag = e => {
         this.isDragging = true;
         this.context.boxesActions.dragBoxes(this.dragInfos, {x:e.pageX, y:e.pageY});
+        this.context.contextualMenus.update();
     }
 
     copy(){
         const links = Array.from((this.boxes.reduce((relatedLinks, box) => {
-            const boxRelatedLinks = this.context.links.getRelatedLinks(box);
+            const boxRelatedLinks = this.context.links.getRelatedLinks([box]);
             boxRelatedLinks.forEach(link => {
                 relatedLinks.add(link);
             });

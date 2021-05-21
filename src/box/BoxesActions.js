@@ -13,30 +13,30 @@ export default class BoxesActions{
             undo:() => {
                 this.context.boxes.removeBox(box);
             },
-            redo:() => {
-                exec();
-            },
+            redo:() => exec(),
         });
         exec();
 
         box.content.enableEdition();
     }
 
-    deleteBox(box){
-        const links = this.context.links.getRelatedLinks(box);
+    deleteBoxes(boxes){
+        const links = this.context.links.getRelatedLinks(boxes);
         const exec = () => {
-            this.context.boxes.removeBox(box);
+            boxes.forEach(box => {
+                this.context.boxes.removeBox(box);
+            });
             links.forEach(link => this.context.links.removeLink(link));
         };
         this.context.undoStack.addAction({
             description:"delete box",
             undo:() => {
-                this.context.boxes.addBox(box);
+                boxes.forEach(box => {
+                    this.context.boxes.addBox(box);
+                });
                 links.forEach(link => this.context.links.addLink(link));
             },
-            redo:() => {
-                exec();
-            }
+            redo:() => exec()
         });
         exec();
     }
@@ -64,12 +64,12 @@ export default class BoxesActions{
         }
     }
 
-    changeBoxColor(box, newColor){
-        const oldColor = box.color;
-        const exec = () => box.setColor(newColor);
+    changeBoxesColor(boxes, newColor){
+        const oldColors = new Map(boxes.map(box => [box, box.color]));
+        const exec = () => boxes.forEach(box => box.setColor(newColor));
         this.context.undoStack.addAction({
             description:"change box color",
-            undo:() => box.setColor(oldColor),
+            undo:() => boxes.forEach(box => box.setColor(oldColors.get(box))),
             redo:() => exec()
         });
         exec();
@@ -84,9 +84,7 @@ export default class BoxesActions{
                 undo:() => {
                     boxContent.setValue(oldContent);
                 },
-                redo:() => {
-                    exec();
-                }
+                redo:() => exec()
             });
             exec();
         }
@@ -107,9 +105,11 @@ export default class BoxesActions{
         this.context.undoStack.addAction({
             undo:() => {
                 setPositions(oldPositions);
+                this.context.contextualMenus.alignmentMenu.update();
             },
             redo:() => {
                 setPositions(newPositions);
+                this.context.contextualMenus.alignmentMenu.update();
             }
         });
         setPositions(newPositions);
@@ -120,7 +120,7 @@ export default class BoxesActions{
             boxes,
             initialPointerPosition,
             initialBoxesPositions:new Map(boxes.map(box => [box, {x:box.x, y:box.y}])),
-            relatedLinks:new Set(boxes.map(box => this.context.links.getRelatedLinks(box)).flat()),
+            relatedLinks:this.context.links.getRelatedLinks(boxes),
         };
     }
 
@@ -134,7 +134,7 @@ export default class BoxesActions{
             box.isDragging = true;
         });
 
-        this.context.selectionMenu.update();
+        this.context.contextualMenus.alignmentMenu.update();
         dragInfos.relatedLinks.forEach(link => link.update());
     }
 

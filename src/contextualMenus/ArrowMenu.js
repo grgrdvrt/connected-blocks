@@ -1,4 +1,4 @@
-import {headTypes} from "./LinkHead";
+import {headTypes} from "../link/LinkHead";
 import {dom, svg} from "../utils/dom";
 
 export default class ArrowMenu{

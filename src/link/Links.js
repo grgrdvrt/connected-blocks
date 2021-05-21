@@ -94,11 +94,13 @@ export default class Links{
         this.links.forEach(link => link.update());
     }
 
-    getRelatedLinks(box){
-        return this.links.filter(link => {
-            return link.origin === box
-                || link.target === box;
-        });
+    getRelatedLinks(boxes){
+        return new Set(boxes.map(box => {
+            return this.links.filter(link => {
+                return link.origin === box
+                    || link.target === box;
+            });
+        }).flat());
     }
 
     setPosition(x, y){

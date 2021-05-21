@@ -1,4 +1,4 @@
-import {dom} from "./utils/dom";
+import {dom} from "../utils/dom";
 import {
     leftAlignIcon,
     rightAlignIcon,
@@ -9,13 +9,12 @@ import {
 
     verticalDistributeIcon,
     horizontalDistributeIcon,
-} from "./utils/icons";
+} from "../utils/icons";
 
-export default class SelectionMenu{
+export default class AligmentMenu{
     constructor(context){
         this.context = context;
         this.initDom();
-        this.isHidden = true;
     }
 
     initDom(){
@@ -23,7 +22,7 @@ export default class SelectionMenu{
         const verticalAlignBtn = dom({type:"button", children:[verticalAlignIcon()]});
         const rightAlignBtn = dom({type:"button", children:[rightAlignIcon()]});
         const topContainer = dom({
-            classes:"selectionMenu-top",
+            classes:"alignmentMenu-top",
             children:[
                 leftAlignBtn,
                 verticalAlignBtn,
@@ -34,7 +33,7 @@ export default class SelectionMenu{
         const horizontalAlignBtn = dom({type:"button", children:[horizontalAlignIcon()]});
         const bottomAlignBtn = dom({type:"button", children:[bottomAlignIcon()]});
         const leftContainer = dom({
-            classes:"selectionMenu-left",
+            classes:"alignmentMenu-left",
             children:[
                 topAlignBtn,
                 horizontalAlignBtn,
@@ -44,17 +43,17 @@ export default class SelectionMenu{
 
         const horizontalDistributeBtn = dom({
             type:"button",
-            classes:"selectionMenu-horizontalDistributeBtn",
+            classes:"alignmentMenu-horizontalDistributeBtn",
             children:[horizontalDistributeIcon()]
         });
         const verticalDistributeBtn = dom({
             type:"button",
-            classes:"selectionMenu-verticalDistributeBtn",
+            classes:"alignmentMenu-verticalDistributeBtn",
             children:[verticalDistributeIcon()]
         });
 
         this.dom = dom({
-            classes:"selectionMenu hidden",
+            classes:"alignmentMenu closed",
             children:[
                 topContainer,
                 leftContainer,
@@ -77,31 +76,15 @@ export default class SelectionMenu{
         this.distributionMap.set(verticalDistributeBtn, {x:0, y:1});
     }
 
-    updateVisibility(){
-        if(this.context.selection.boxes.length > 1){
-            if(this.isHidden){
-                this.show();
-            }
-            this.update();
-            this.context.boxes.dom.classList.add("multipleSelection");
-        }
-        else if(!this.isHidden){
-            this.hide();
-            this.context.boxes.dom.classList.remove("multipleSelection");
-        }
-    }
-
-    show(){
-        this.isHidden = false;
+    open(){
         this.dom.addEventListener("click", this.onClick);
-        this.dom.classList.remove("hidden");
+        this.dom.classList.remove("closed");
         this.update();
     }
 
-    hide(){
-        this.isHidden = true;
+    close(){
         this.dom.removeEventListener("click", this.onClick);
-        this.dom.classList.add("hidden");
+        this.dom.classList.add("closed");
     }
 
     onClick = e => {
