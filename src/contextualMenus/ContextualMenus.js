@@ -1,4 +1,5 @@
 import {dom} from "../utils/dom";
+import {arraysDiff} from "../utils";
 import AlignmentMenu from "./AlignmentMenu";
 import LinkMenu from "./LinkMenu";
 import BoxMenu from "../contextualMenus/BoxMenu";
@@ -6,7 +7,7 @@ import BoxMenu from "../contextualMenus/BoxMenu";
 export default class ContextualMenus{
     constructor(context){
         this.context = context;
-        this.currentMenu = undefined;
+        this.currentMenus = [];
         this.initDom();
     }
 
@@ -25,33 +26,22 @@ export default class ContextualMenus{
 
     update(){
         const {boxes, links} = this.context.selection;
-        let menu;
-        if(links.length === 0 && boxes.length === 1){
-            this.boxMenu.setBox(boxes[0]);
-            menu = this.boxMenu;
+        let menus = [];
+        if(links.length === 0 && boxes.length > 0){
+            this.boxMenu.setBoxes(boxes);
+            menus.push(this.boxMenu);
         }
-        else if(links.length === 0 && boxes.length > 1){
-            menu = this.alignmentMenu;
+        if(links.length === 0 && boxes.length > 1){
+            menus.push(this.alignmentMenu);
         }
-        else if(links.length === 1 && boxes.length === 0){
+        if(links.length === 1 && boxes.length === 0){
             this.linkMenu.setLink(links[0]);
-            menu = this.linkMenu;
+            menus.push(this.linkMenu);
         }
-        else{
-            menu = undefined;
-        }
-
-        if(this.currentMenu !== menu){
-            if(this.currentMenu){
-                this.currentMenu.close();
-            }
-            if(menu){
-                menu.open();
-            }
-        }
-        this.currentMenu = menu;
-        if(this.currentMenu){
-            this.currentMenu.update();
-        }
+        const {added, removed} = arraysDiff(menus, this.currentMenus);
+        added.forEach(menu => menu.open());
+        removed.forEach(menu => menu.close());
+        this.currentMenus = menus;
+        this.currentMenus.forEach(menu => menu.update());
     }
 }

@@ -38,8 +38,8 @@ export default class LinkMenu{
         this.centerMenu = dom({
             classes:["linkMenu-centerMenu"],
             children:[
-                this.deleteButton,
                 this.dashButton,
+                this.deleteButton,
                 this.colorBtn,
             ]
         });

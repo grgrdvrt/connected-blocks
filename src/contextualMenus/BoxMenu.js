@@ -1,4 +1,5 @@
 import {dom} from "../utils/dom";
+import {rectsBounding} from "../utils/maths";
 import {linkIcon, deleteIcon} from "../utils/icons";
 
 export default class BoxMenu{
@@ -35,8 +36,8 @@ export default class BoxMenu{
         });
     }
 
-    setBox(box){
-        this.box = box;
+    setBoxes(boxes){
+        this.boxes = boxes;
         this.update();
     }
 
@@ -51,8 +52,9 @@ export default class BoxMenu{
     }
 
     update(){
-        this.colorBtn.value = this.box.color;
-        const rect = this.box.getRect();
+        this.colorBtn.value = this.boxes[0].color;
+
+        const rect = rectsBounding(this.boxes.map(box => box.getRect()));
         Object.assign(this.dom.style, {
             left:rect.x + "px",
             top:rect.y + "px",
@@ -73,17 +75,17 @@ export default class BoxMenu{
     }
 
     onDelete = () => {
-        this.context.boxesActions.deleteBoxes([this.box]);
+        this.context.boxesActions.deleteBoxes(this.boxes.concat());
     }
 
     onLineDown = () => {
-        this.context.links.startCreatingLink(this.box);
+        this.context.links.startCreatingLink(this.boxes[0]);
     }
 
     onColorChange = () => {
         const newColor = this.colorBtn.value;
         this.context.boxes.lastColor = newColor;
-        this.context.boxesActions.changeBoxesColor([this.box], newColor);
+        this.context.boxesActions.changeBoxesColor(this.boxes, newColor);
     }
 
 }

@@ -1,4 +1,5 @@
 import {dom} from "../utils/dom";
+import {rectsBounding} from "../utils/maths";
 import {
     leftAlignIcon,
     rightAlignIcon,
@@ -88,33 +89,21 @@ export default class AligmentMenu{
     }
 
     onClick = e => {
+        const boxes = this.context.selection.boxes.concat();
         if(this.alignMap.has(e.target)){
-            this.alignBoxes(this.alignMap.get(e.target));
+            this.alignBoxes(boxes, this.alignMap.get(e.target));
         }
         else if(this.distributionMap.has(e.target)){
-            this.distributeBoxes(this.distributionMap.get(e.target));
+            this.distributeBoxes(boxes, this.distributionMap.get(e.target));
         }
     }
 
     update(){
-        const selection = this.context.selection.boxes;
-        let xMin = Number.POSITIVE_INFINITY;
-        let yMin = Number.POSITIVE_INFINITY;
-        let xMax = Number.NEGATIVE_INFINITY;
-        let yMax = Number.NEGATIVE_INFINITY;
-        selection.forEach(box => {
-            const boxRect = box.getRect();
-            if(boxRect.x < xMin) xMin = boxRect.x;
-            if(boxRect.y < yMin) yMin = boxRect.y;
-            if(boxRect.x + boxRect.width > xMax) xMax = boxRect.x + boxRect.width;
-            if(boxRect.y + boxRect.height > yMax) yMax = boxRect.y + boxRect.height;
-        });
-        this.rect = {
-            x:xMin,
-            y:yMin,
-            width:xMax - xMin,
-            height:yMax - yMin
-        };
+        this.rect = rectsBounding(
+            this.context.selection.boxes.map(
+                box => box.getRect()
+            )
+        );
         const margin = 15;
         Object.assign(this.dom.style, {
             top:this.rect.y - margin + "px",
@@ -124,8 +113,7 @@ export default class AligmentMenu{
         });
     }
 
-    alignBoxes(ratios){
-        const boxes = this.context.selection.boxes.concat();
+    alignBoxes(boxes, ratios){
         const {x:rx, y:ry, width:rw, height:rh} = this.rect;
         const newPositions = boxes.map(box => {
             const {x:bx, y:by, width:bw, height:bh} = box.getRect();
@@ -137,8 +125,8 @@ export default class AligmentMenu{
         this.context.boxesActions.setBoxesPositions(boxes, newPositions);
     }
 
-    distributeBoxes(ratios){
-        const boxes = this.context.selection.boxes.concat().sort((a, b) => {
+    distributeBoxes(boxes, ratios){
+        boxes.sort((a, b) => {
             return (a.x - b.x) * ratios.x + (a.y - b.y) * ratios.y;
         });
         const {x:rx, y:ry, width:rw, height:rh} = this.rect;
@@ -163,6 +151,45 @@ export default class AligmentMenu{
             x += (space.x + rect.width);
             y += (space.y + rect.height);
             return pos;
+        });
+        this.context.boxesActions.setBoxesPositions(boxes, newPositions);
+    }
+
+    autoLayout(){
+        const boxes = this.context.selection.boxes.concat();
+        const rects = new Map(boxes.map(box => [box, box.getRect()]));
+        const areas = new Map(boxes.map(box => {
+            const rect = rects.get(box);
+            return [box, {
+                xMin:rect.x,
+                yMin:rect.y,
+                xMax:rect.x + rect.width,
+                yMax:rect.y + rect.height,
+            }];
+        }));
+        boxes.forEach(boxA => {
+            const a = areas.get(boxA);
+            boxes.forEach(boxB => {
+                const b = areas.get(boxB);
+                if((a.xMin >= b.xMin && a.xMin <= b.xMax)
+                   || (b.xMin >= a.xMin && b.xMin <= a.xMax)) {
+                    a.xMin = b.xMin = Math.min(a.xMin, b.xMin);
+                    a.xMax = b.xMax = Math.max(a.xMax, b.xMax);
+                }
+                if((a.yMin >= b.yMin && a.yMin <= b.yMax)
+                   || (b.yMin >= a.yMin && b.yMin <= a.yMax)) {
+                    a.yMin = b.yMin = Math.min(a.yMin, b.yMin);
+                    a.yMax = b.yMax = Math.max(a.yMax, b.yMax);
+                }
+            });
+        });
+        const newPositions = boxes.map(box => {
+            const rect = rects.get(box);
+            const area = areas.get(box);
+            return {
+                x:0.5 * (area.xMin + area.xMax) - 0.5 * rect.width,
+                y:0.5 * (area.yMin + area.yMax) - 0.5 * rect.height,
+            };
         });
         this.context.boxesActions.setBoxesPositions(boxes, newPositions);
     }

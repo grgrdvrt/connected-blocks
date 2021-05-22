@@ -60,3 +60,21 @@ export function lerpColors(a, b, t){
     ];
 }
 
+export function rectsBounding(rects){
+    let xMin = Number.POSITIVE_INFINITY;
+    let yMin = Number.POSITIVE_INFINITY;
+    let xMax = Number.NEGATIVE_INFINITY;
+    let yMax = Number.NEGATIVE_INFINITY;
+    rects.forEach(rect => {
+        if(rect.x < xMin) xMin = rect.x;
+        if(rect.y < yMin) yMin = rect.y;
+        if(rect.x + rect.width > xMax) xMax = rect.x + rect.width;
+        if(rect.y + rect.height > yMax) yMax = rect.y + rect.height;
+    });
+    return {
+        x:xMin,
+        y:yMin,
+        width:xMax - xMin,
+        height:yMax - yMin
+    };
+}
