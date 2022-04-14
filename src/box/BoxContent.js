@@ -3,6 +3,10 @@ import {
     placeCaretAtEnd,
 } from "../utils/dom";
 
+import hljs from "highlight.js";
+import javascript from 'highlight.js/lib/languages/javascript';
+hljs.registerLanguage("javascript", javascript);
+
 export default class BoxContent{
     constructor(context, box){
         this.context = context;
@@ -113,7 +117,12 @@ export default class BoxContent{
         if(content !== this.display.innerHTML){
             this.display.innerHTML = content;
             this.box.updateRelatedLinks();
-            setTimeout(() => this.box.updateRelatedLinks(), 300);
+            setTimeout(() =>{
+				this.box.updateRelatedLinks();
+				this.display.querySelectorAll('pre').forEach((el) => {
+					hljs.highlightElement(el, {language:"javascript"});
+				});
+			}, 300);
         }
     }
 }

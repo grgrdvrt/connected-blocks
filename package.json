@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/grgrdvrt/connected-blocks#readme",
   "dependencies": {
-    "esbuild": "^0.11.16"
+    "esbuild": "^0.11.16",
+    "highlight.js": "^11.5.1"
   }
 }

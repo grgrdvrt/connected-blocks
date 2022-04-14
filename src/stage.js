@@ -3,6 +3,7 @@ import {boxesIntersection} from "./utils/maths";
 
 const FRICTION = 0.9;
 const MIN_SPEED = 0.5;
+const MAX_SPEED = 100;
 export default class Stage{
     constructor(context){
         this.context = context;
@@ -143,6 +144,13 @@ export default class Stage{
             x:this.initialDragPos.x + delta.x - this.x,
             y:this.initialDragPos.y + delta.y - this.y,
         };
+		const speed = Math.hypot(this.velocity.x, this.velocity.y);
+		if(speed > MAX_SPEED){
+			const r = MAX_SPEED / speed;
+			this.velocity.x *= r;
+			this.velocity.y *= r;
+
+		}
         this.setPosition(
             this.initialDragPos.x + delta.x,
             this.initialDragPos.y + delta.y,
@@ -213,6 +221,32 @@ export default class Stage{
             this.velocity = undefined;
         }
     }
+
+	center(){
+		let xMin = Number.POSITIVE_INFINITY;
+		let yMin = Number.POSITIVE_INFINITY;
+		let xMax = Number.NEGATIVE_INFINITY;
+		let yMax = Number.NEGATIVE_INFINITY;
+		this.context.boxes.boxes.forEach(box => {
+			const r = box.getRect();
+			if(r.x < xMin){
+				xMin = r.x;
+			}
+			if(r.x + r.width > xMax){
+				xMax = r.x + r.width;
+			}
+			if(r.y < yMin){
+				yMin = r.y;
+			}
+			if(r.y + r.width > yMax){
+				yMax = r.y + r.width;
+			}
+		});
+		this.setPosition(
+			0.5 * (xMax + xMin),
+			0.5 * (yMax + yMin)
+		);
+	}
 
 
     setPosition(x, y){

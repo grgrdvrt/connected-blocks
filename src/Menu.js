@@ -7,6 +7,11 @@ export default class Menu{
     }
 
     initDom(){
+        this.centerButton = dom({
+            type:"button",
+            classes:"menu-button menu-center",
+            innerHTML:"center",
+        });
         this.saveButton = dom({
             type:"button",
             classes:"menu-button",
@@ -29,6 +34,7 @@ export default class Menu{
         this.dom = dom({
             classes:"menu",
             children:[
+                this.centerButton,
                 this.saveButton,
                 this.label,
                 this.fileInput,
@@ -37,14 +43,20 @@ export default class Menu{
     }
 
     enable(){
+        this.centerButton.addEventListener("click", this.onCenterClick);
         this.saveButton.addEventListener("click", this.onSaveClick);
         this.fileInput.addEventListener('change', this.onFileSelected, false);
     }
 
     disable(){
+        this.centerButton.removeEventListener("click", this.onCenterClick);
         this.saveButton.removeEventListener("click", this.onSaveClick);
         this.fileInput.removeEventListener('change', this.onFileSelected);
     }
+
+	onCenterClick = () => {
+		this.context.stage.center();
+	}
 
     onSaveClick = () => {
         const memento = this.context.getMemento();
