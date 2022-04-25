@@ -41,7 +41,7 @@ class Main {
 
         window.addEventListener("keydown", this.onKeydown);
 
-        this.initDebug();
+        // this.initDebug();
     }
 
     initDebug(){
@@ -59,10 +59,14 @@ class Main {
         if(e.ctrlKey){
             switch(e.key){
                 case "c":
-                    this.copiedData = JSON.stringify(this.selection.copy());
+					if(!this.boxes.getIsEditing()){
+						navigator.clipboard.writeText(JSON.stringify(this.selection.copy()));
+					}
                     break;
                 case "v":
-                    this.paste();
+					if(!this.boxes.getIsEditing()){
+						this.paste();
+					}
                     break;
             }
         }
@@ -84,32 +88,39 @@ class Main {
     }
 
     paste(){
-        const memento = JSON.parse(this.copiedData);
-        const {newBoxes, newLinks} = this.addMemento(memento);
+		navigator.clipboard.readText().then(clipText => {
+			const memento = JSON.parse(clipText);
+			const {newBoxes, newLinks} = this.addMemento(memento);
 
-        this.selection.setBoxes(newBoxes);
-        newBoxes.forEach(box => {
-            box.setPosition(box.x + 50, box.y + 50);
-        });
-        this.undoStack.addAction({
-            undo:() => {
-                newBoxes.forEach(box => {
-                    this.boxes.removeBox(box);
-                });
-                newLinks.forEach(link => {
-                    this.links.removeLink(link);
-                });
-            },
-            redo:() => {
-                newBoxes.forEach(box => {
-                    this.boxes.addBox(box);
-                });
-                newLinks.forEach(link => {
-                    this.links.addLink(link);
-                });
-            },
-        });
+			this.selection.setBoxes(newBoxes);
+			newBoxes.forEach(box => {
+				box.setPosition(box.x + 50, box.y + 50);
+			});
+			this.undoStack.addAction({
+				undo:() => {
+					newBoxes.forEach(box => {
+						this.boxes.removeBox(box);
+					});
+					newLinks.forEach(link => {
+						this.links.removeLink(link);
+					});
+				},
+				redo:() => {
+					newBoxes.forEach(box => {
+						this.boxes.addBox(box);
+					});
+					newLinks.forEach(link => {
+						this.links.addLink(link);
+					});
+				},
+			});
+		});
     }
+
+	updateTitle(){
+		const titleElement = this.dom.querySelector("h1.title");
+		document.title = titleElement ? titleElement.innerHTML : "Diagram";
+	}
 
 
     setMemento(memento){

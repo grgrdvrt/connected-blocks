@@ -44,6 +44,10 @@ export default class Boxes{
         }
     }
 
+	getIsEditing(){
+		return this.boxes.some(box => box.content.isEditing);
+	}
+
     getBoxByDom(dom){
         return this.boxes.find(box => box.dom === dom);
     }

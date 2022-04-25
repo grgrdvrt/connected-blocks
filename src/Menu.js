@@ -60,7 +60,9 @@ export default class Menu{
 
     onSaveClick = () => {
         const memento = this.context.getMemento();
-        downloadFile(JSON.stringify(memento), "diagram");
+		const titleElement = this.context.dom.querySelector("h1.title");
+		const title = titleElement ? titleElement.innerHTML : "diagram";
+        downloadFile(JSON.stringify(memento), title);
     }
 
     onFileSelected = e => {

@@ -113,16 +113,54 @@ export default class BoxContent{
     }
 
     displayContent(){
-        const content = this.value.replace(/  \n/g, "<br>");
+        const content = replaceTagsInPre(
+			this.value.replace(/  \n/g, "<br>")
+		);
+
         if(content !== this.display.innerHTML){
             this.display.innerHTML = content;
+			this.display.querySelectorAll('pre').forEach((el) => {
+				hljs.highlightElement(el, {language:"javascript"});
+			});
             this.box.updateRelatedLinks();
             setTimeout(() =>{
 				this.box.updateRelatedLinks();
-				this.display.querySelectorAll('pre').forEach((el) => {
-					hljs.highlightElement(el, {language:"javascript"});
-				});
+
+				this.context.updateTitle();
 			}, 300);
         }
     }
+}
+
+
+function replaceTagsInPre(content){
+	const preMatches = [...content.matchAll(/<\/?pre>/g)];
+	const prePairs = [];
+	let pair = [];
+	preMatches.forEach(match => {
+		if(match[0] === "<pre>" && pair.length === 0){
+			pair.push(match.index);
+		}
+		else if(match[0] === "</pre>" && pair.length === 1){
+			pair.push(match.index);
+			prePairs.push(pair);
+			pair = [];
+		}
+	});
+	const tagsMatches = [...content.matchAll(/</g)];
+	const indicesToReplace = [];
+	tagsMatches.forEach(t => {
+		prePairs.some(pair => {
+			if(pair[0] < t.index && pair[1] > t.index){
+				indicesToReplace.push(t.index);
+			}
+		});
+	});
+	indicesToReplace.sort((a, b) => b - a);
+	let result = content;
+	const replacement = "&lt;";
+	indicesToReplace.forEach(index => {
+		result = result.substring(0, index) + replacement + result.substring(index + 1);
+	});
+	return result;
 }
